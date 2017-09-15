@@ -1,3 +1,3 @@
 Coming soon
 
-[math/points-and-vectors.html]
+[Points and Vectors](math/points-and-vectors.html)
