@@ -1,7 +1,10 @@
 ---
-math: true
+layout: default
 title: Points and Vectors
+math: true
 ---
+
+[Next - Angles](2-angles.html)
 
 # Math for game development : Points and Vectors
 
@@ -215,3 +218,5 @@ function cw(x, y)
     return y, -x
 end
 {% endhighlight %}
+
+[Next - Angles](2-angles.html)

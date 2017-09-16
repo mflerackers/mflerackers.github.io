@@ -2,3 +2,7 @@ theme: jekyll-theme-minimal
 title: fromatogra
 description: Software and mathematics
 markdown: kramdown
+collections:
+  math:
+    output: true
+    permalink: /:collection/:name

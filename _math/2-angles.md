@@ -1,7 +1,10 @@
 ---
-math: true
+layout: default
 title: Angles
+math: true
 ---
+
+[Previous - Points and Vectors](1-points-and-vectors.html)
 
 # Math for game development : Angles
 
@@ -88,11 +91,7 @@ The cosine of 0 radians is 1
 
 $$1=\frac{\vec{a}.\vec{a}}{\left|\vec{a}\right|^2}$$
 
-Multiplying both sides with 
-
-$$\left|\vec{a}\right|^2$$ 
-
-gives
+Multiplying both sides with $$\left\vert\vec{a}\right\vert^2$$ gives
 
 $$\left|\vec{a}\right|^2=\vec{a}.\vec{a}$$
 
@@ -170,3 +169,4 @@ $$y'=(x-c_x)*sin(\alpha)+(y-c_y)*cos(\alpha) + cyl$$
 
 Of course unless this rotation anchor is animated, it is better to offset the geometry once in order to save on calculations. For example instead of drawing a sprite as {0, 0, w, h}, it is better drawn as {-w*0.5, -h*0.5, w*0.5, h*0.5} if the anchor is always in the center of the sprite. The same goes for scaling. If a sprite has a fixed scale, incorporate it into the geometry, like {0, 0, w*2, h*2}.
 
+[Previous - Points and Vectors](1-points-and-vectors.html)
