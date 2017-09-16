@@ -1,3 +1,4 @@
 theme: jekyll-theme-minimal
 title: fromatogra
-description: Programming and mathematics
+description: Software and mathematics
+markdown: kramdown
