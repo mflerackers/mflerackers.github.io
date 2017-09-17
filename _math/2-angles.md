@@ -6,7 +6,7 @@ math: true
 
 [Previous - Points and Vectors](1-points-and-vectors.html)
 
-# Math for game development : Angles
+# [Math for game development](../) : Angles
 
 ## Angles
 While the direction of a vector is useful in many ways, we can't tell much from the directions of two vectors, not like we could from their lengths. Nor can we simply linearly interpolate between two directions. For this we need a conversion to something we are more accustomed too, namely angles. Instead of degrees, we are going to use radians. While degrees are handy for display or editing values, converting from and to degrees would waste a lot of unnecessary CPU cycles. Degrees go from 0 to 360, radians from 0 to $$2\pi$$.

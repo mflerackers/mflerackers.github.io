@@ -6,7 +6,7 @@ math: true
 
 [Next - Angles](2-angles.html)
 
-# Math for game development : Points and Vectors
+# [Math for game development](../) : Points and Vectors
 
 ## Scalars
 A scalar has one dimension, so we could as well have called it a number.
