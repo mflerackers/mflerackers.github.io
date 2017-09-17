@@ -115,7 +115,7 @@ The dot product can be used to calculate the length (magnitude or norm) of a vec
 ### The cross product
 The cross product if defined as
 
-$$(x_1,y_1)\times(x_2,y_2)=x_1*y_2-y_1*x_2$$
+$$\langle x_1,y_1\rangle\times\langle x_2,y_2\rangle=x_1*y_2-y_1*x_2$$
 
 {% highlight lua %}
 function cross(x1, y1, x2, y2)
@@ -131,11 +131,11 @@ As these two products have many applications. I would suggest that if you want t
 
 If we take the dot product of a vector with itself, we obtain its length squared. 
 
-$${\left|(x, y)\right|}^2 = (x,x).(x,y)=x*x+y*y$$
+$${\left|\langle x, y\rangle\right|}^2 = \langle x,x\rangle.\langle x,y\rangle=x*x+y*y$$
 
 When we need the actual length, we need to take the square root
 
-$$\left|(x, y)\right| = \sqrt{(x,x).(x,y)}=\sqrt{x*x+y*y}$$
+$$\left|\langle x, y\rangle\right| = \sqrt{\langle x,x\rangle.\langle x,y\rangle}=\sqrt{x*x+y*y}$$
 
 {% highlight lua %}
 function length(x, y)
