@@ -1,4 +1,4 @@
-Coming soon
+# Math for game development
 
 {% for chapter in site.math %}
   <div class="math">
