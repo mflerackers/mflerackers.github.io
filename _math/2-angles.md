@@ -120,7 +120,13 @@ end
 {% endhighlight %}
 
 ### Rotating around the origin
-We want to rotate the normalized vector $$\vec{a}$$ by $$\beta$$. If we have the normalized vector $$\vec{a}$$, it can be defined as $$(cos(\alpha), sin(\alpha))$$. Similarly, we can make $$\beta$$ into a normalized vector $$\vec{b} =(cos(\beta), sin(\beta))$$. As we saw before, for normalized vectors, the cosine of the angle between two vectors was equal to the dot product of the two vectors, while the sine of the angle between two vectors was equal to the cross product. The angle between the vectors here is equal to $$\alpha-\beta$$, so we get
+We will start by trying to rotate the normalized vector $$\vec{b}$$ by $$\alpha$$ radians. If we have the normalized vector $$\vec{b}$$ pointing in the direction of $$\beta$$ radians, it can be written as $$\vec{b}=(cos(\alpha), sin(\alpha))$$. Similarly, we can write the angle $$\alpha$$ as the normalized vector $$\vec{a} =(cos(\alpha), sin(\alpha))$$ pointing in the direction of $$\alpha$$. As we saw before, for normalized vectors, the cosine of the angle between two vectors was equal to the dot product of the two vectors, while the sine of the angle between two vectors was equal to the cross product. The angle between the vectors $$\vec{a}$$ and $$\vec{b}$$ is equal to $$\alpha-\beta$$, so we can write
+
+$$cos(\alpha-\beta)=cos(\beta)*cos(\alpha)+sin(\beta)*sin(\alpha)$$
+
+$$sin(\alpha-\beta)=cos(\beta)*sin(\alpha)-sin(\beta)*cos(\alpha)$$
+
+Since multiplication is commutative we can write this as
 
 $$cos(\alpha-\beta)=cos(\alpha)*cos(\beta)+sin(\alpha)*sin(\beta)$$
 
@@ -168,5 +174,17 @@ $$x'=(x-c_x)*cos(\alpha)-(y-c_y)*sin(\alpha) + cx$$
 $$y'=(x-c_x)*sin(\alpha)+(y-c_y)*cos(\alpha) + cyl$$
 
 Of course unless this rotation anchor is animated, it is better to offset the geometry once in order to save on calculations. For example instead of drawing a sprite as {0, 0, w, h}, it is better drawn as {-w*0.5, -h*0.5, w*0.5, h*0.5} if the anchor is always in the center of the sprite. The same goes for scaling. If a sprite has a fixed scale, incorporate it into the geometry, like {0, 0, w*2, h*2}.
+
+{% highlight lua %}
+function rotate(x, y, angle, cx, cy)
+    cx = cx or 0
+    cy = cy or 0
+    c = math.cos(angle)
+    s = math.sin(angle)
+    x = x - cx
+    y = y - cy
+    return x*c - y*s + cx, x*s + y*c + cy
+end
+{% endhighlight %}
 
 [Previous - Points and Vectors](1-points-and-vectors.html)
