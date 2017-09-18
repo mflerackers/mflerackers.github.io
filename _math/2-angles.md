@@ -21,11 +21,15 @@ function rad2deg(r)
 end
 {% endhighlight %}
 
-## Angle to vector
+The number $$\pi$$ used in trigonometric functions is not an arbitrarily chosen value. When we work with normalized vectors, vectors with a length of 1, their destination lies on a circle with a radius of 1. If you measure the circumference of that circle, you arrive at exactly $$2\pi$$ or 6.28318530718. You might remember that if you need the circumference of a circle with radius r, that you need to calculate $$2\pi r$$. The $$r$$ in this case is nothing but a scale factor by which you scale the unit circle which has a radius of 1 and a circumference of $$2\pi$$.
+
+Some game engines use angles from 0 to 360 degrees or from 0 to 1 percent instead. Some even use a clockwise direction for angles rather than the counterclockwise direction used in mathematics to compensate for the inverted y-axis (many games use a positive y-axis going down instead of up). However be aware that this may require changes in mathematical calculations everywhere. The order of vectors in cross products may need to be switched, derivatives may need additional multipliers and angles might need to be adapted.
+
+### Angle to vector
 Lets look at some vectors and the angles they represent.
 
-| vector  | angle            |
-| ------- | ---------------- |
+| vector  | angle              |
+| ------- | ------------------ |
 | (1, 0)  | 0 or $$\pi$$       |
 | (0, 1)  | $$\frac{\pi}{2}$$  |
 | (-1, 0) | $$\pi$$            |
@@ -119,7 +123,9 @@ function drawEnemy(x, y)
 end
 {% endhighlight %}
 
-### Rotating around the origin
+## Rotation
+
+### Rotation around the origin
 We will start by trying to rotate the normalized vector $$\vec{b}$$ by $$\alpha$$ radians. If we have the normalized vector $$\vec{b}$$ pointing in the direction of $$\beta$$ radians, it can be written as $$\vec{b}=(cos(\beta), sin(\beta))$$. Similarly, we can write the angle $$\alpha$$ as the normalized vector $$\vec{a} =(cos(\alpha), sin(\alpha))$$ pointing in the direction of $$\alpha$$. As we saw before, for normalized vectors, the cosine of the angle between two vectors was equal to the dot product of the two vectors, while the sine of the angle between two vectors was equal to the cross product. The angle between the vectors $$\vec{a}$$ and $$\vec{b}$$ is equal to $$\alpha-\beta$$, so we can write
 
 $$cos(\alpha-\beta)=cos(\beta)*cos(\alpha)+sin(\beta)*sin(\alpha)$$
@@ -144,7 +150,7 @@ $$cos(\alpha+\beta)=cos(\alpha)*cos(\beta)-sin(\alpha)*sin(\beta)$$
 
 $$sin(\alpha+\beta)=sin(\alpha)*cos(\beta)+cos(\alpha)*sin(\beta)$$
 
-These formula's might look familiar, as they should be featured in every mathematics book on geometry. They can be easily derived from the dot and cross products as shown above.
+These formula's might look familiar, as they should be featured in every mathematics book on trigonometry. They can be easily derived from the dot and cross products as shown above.
 
 We rotated the normalized vector pointing towards $$\beta$$ by $$\alpha$$ degrees. We would like to do that for any vector, not just normalized vectors, so that we can apply it to points. This step is easy, as we can multiply both sides by the length of the vector
 
@@ -166,7 +172,7 @@ $$y'=x*sin(\alpha)+y*cos(\alpha)$$
 
 This formula might also look familiar if you've played with rotation matrices before.
 
-### Rotating around a given center
+### Rotation around a given center
 Like scaling from a given center, the center of rotation can be selected by translating the desired center to the origin, doing the rotation and translating back.
 
 $$x'=(x-c_x)*cos(\alpha)-(y-c_y)*sin(\alpha) + cx$$
@@ -179,11 +185,60 @@ Of course unless this rotation anchor is animated, it is better to offset the ge
 function rotate(x, y, angle, cx, cy)
     cx = cx or 0
     cy = cy or 0
-    c = math.cos(angle)
-    s = math.sin(angle)
+    local c = math.cos(angle)
+    local s = math.sin(angle)
     x = x - cx
     y = y - cy
     return x*c - y*s + cx, x*s + y*c + cy
+end
+{% endhighlight %}
+
+### Rotation using a normalized vector
+
+Note that while we seemingly use an angle to rotate, this is not really the case. Rotation is actually done using a vector. If we look at the formula for rotating around $$(0, 0)$$
+
+$$x'=x*cos(\alpha)-y*sin(\alpha)$$
+
+$$y'=x*sin(\alpha)+y*cos(\alpha)$$
+
+We can replace the sine and cosine of $$\alpha$$ with the normalized vector $$v$$
+
+$$v=\langle cos(\alpha), sin(\alpha)\rangle$$
+
+giving
+
+$$x'=x*v_x-y*v_y$$
+
+$$y'=x*v_y+y*v_x$$
+
+This insight has several implications. If we want to rotate for example a sprite given a direction, we don't need to calculate an angle from the direction, to convert it again to a vector to do the rotation. We can just use the normalized vector directly. If we apply the rotation of a static object every frame, we might want to store this vector rather than the angle, since we can use it directly without the need of trigonometric functions.
+
+{% highlight lua %}
+function followTarget(x, y, tx, ty, points)
+    -- Build direction vector
+    local vx, vy = tx-x, ty-y
+    -- Get angle
+    local angle = math.atan2(vy, vx)
+    -- Get vector
+    local c = math.cos(angle)
+    local s = math.sin(angle)
+    -- Rotate points
+    for _, point in ipairs(points) do
+        point.x, point.y = point.x*c - point.y*s, point.x*s + point.y*c
+    end
+end
+{% endhighlight %}
+
+compare this with
+
+{% highlight lua %}
+function followTarget(x, y, tx, ty, points)
+    -- Build direction vector
+    local vx, vy = normalize(tx-x, ty-y)
+    -- Rotate points
+    for _, point in ipairs(points) do
+        point.x, point.y = point.x*vx - point.y*vy, point.x*vy + point.y*vx
+    end
 end
 {% endhighlight %}
 
