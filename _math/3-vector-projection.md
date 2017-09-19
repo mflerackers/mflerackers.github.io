@@ -10,11 +10,11 @@ math: true
 
 ## Vector projection
 
-A projection of a point or vector onto a line or other vector has many useful applications.
+A projection of a vector onto another vector has many applications.
 
-Imagine for example a cart on a slope, given two points on the slope and the gravity vector, we can use the projection of the gravity vector onto the slope to calculate the direction of the force on the cart at that point.
+Imagine for example a cart on a slope. Given a vector made from two points on the slope and the gravity vector, we can use the projection of the gravity vector onto the slope vector to calculate the direction qnd magnitude of the force on the cart at that point.
 
-Or imagine for example a character jumping along an irregular polygon wall, when its collision circle collides with the wall, where is the closest point to the wall? This point is the projection of the circle's center onto the wall.
+Or imagine for example a character jumping along an irregular polygon wall, when its collision circle collides with the wall, we can calculate the closest point to the wall by projecting the vector from one of the points on the wall to the circle's center onto the wall vector.
 
 ## Calculating the projection of a vector onto another vector
 
@@ -22,11 +22,11 @@ If we look at the picture below, we see $$A'$$ which is the projection of the ve
 
 ![proj_unrotated](/assets/proj_unrotated.png)
 
-To make this task easier, or at least more intuitive, we are going to rotate this setup. Let's arrange the vector $$b$$ so that it is parallel with the x-axis.
+To make this task easier, or at least more intuitive, we are going to rotate this setup. Let's arrange the vector $$\hat{b}$$ so that it is parallel with the x-axis.
 
 ![proj_unscaled_equal](/assets/proj_unscaled_equal.png)
 
-If we look at point $$A'$$ now, we see that $$A'=(x, 0)$$ if $$A=(x,y)$$. Now let's scale our setup, so that $$A$$ is lying on the unit circle, a circle with as radius 1. In this case $$x$$ is equal to the cosine of $$\alpha$$.
+If we look at point $$A'$$ now, we see that $$A'=(x, 0)$$ if $$A=(x,y)$$. Now let's scale our setup, so that $$A$$ is lying on the unit circle, a circle with as radius 1. In this case we see that $$x$$ is equal to the cosine of $$\alpha$$.
 
 ![proj_cos](/assets/proj_cos.png)
 
@@ -34,9 +34,9 @@ $$x=cos(\alpha)$$
 
 Of course in our second rotated but unscaled scenario, the vector $$\overrightarrow{CA}$$ doesn't necessarily have a length equal to 1. Both $$A$$ and $$A'$$ are scaled by the length of $$\overrightarrow{CA}$$. This means that to go back to the second scenario, have to multiply by the length of $$\overrightarrow{CA}$$ to correct the scale.
 
-$$x=\lvert\overrightarrow{CA}\lvert cos(\alpha)=\lvert a\lvert cos(\alpha)\quad(1)$$
+$$x=\lvert\overrightarrow{CA}\lvert cos(\alpha)=\lvert \hat{a}\lvert cos(\alpha)\quad(1)$$
 
-We don't want $$\alpha$$ in our equation, as we want a solution with just the two vectors $$a$$ and $$b$$. We can use the dot product, since the cosine of an angle is equal to the dot product of the vectors that form the angle if the vectors are normalized
+We don't want $$\alpha$$ in our equation, as we want a solution with just the two vectors $$\hat{a}$$ and $$\hat{b}$$. We can use the dot product, since the cosine of an angle is equal to the dot product of the vectors that form the angle if the vectors are normalized
 
 $$cos(\alpha)=\hat{a}.\hat{b}$$
 
