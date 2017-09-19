@@ -19,7 +19,7 @@ At this stage we can't move or rotate yet, but we can scale. Scaling a point or 
 $$(x',y') = s(x, y)=(s*x, s*y)$$
 
 {% highlight lua %}
-function mul(x, y, s)
+function mul(s, x, y)
     return x * s, y *s
 end
 {% endhighlight %}
@@ -42,14 +42,17 @@ end
 {% endhighlight %}
 
 **The point at the arrow of the vector should always come first.**
-Notice that calculating the vector from for example $$(0, 0)$$ to $$(1, 4)$$ or from $$(4, 5)$$ to $$(5, 9)$$ both give the vector $$\langle 1, 4\rangle$$. Because to move from any of the two origins towards their destination you need to move in the same direction, crossing the same distance. Adding the vector to its origin gives us the destination.
+Notice that calculating the vector from for example $$(0, 0)$$ to $$(1, 4)$$ or from $$(4, 5)$$ to $$(5, 9)$$ both give the vector $$\langle 1, 4\rangle$$. Because to move from any of the two origins towards their destination you need to move in the same direction, crossing the same distance.
+
+Adding the vector to its origin gives us the destination.
 
 $$a + \vec{ab}=b$$
 
-A vector can move or translate a point by a given distance in a given direction.
 This is quite logical
 
 $$a + \vec{ab} = a + (b - a)=a + b - a=b$$
+
+A vector can move or translate a point by a given distance in a given direction.
 
 {% highlight lua %}
 function add(x1, y1, x2, y2)
@@ -61,7 +64,7 @@ Since a point and a vector are so similar, should we really distinguish them? Es
 
 $$(x, y) - (0, 0) = \langle x, y\rangle$$
 
-Yes and no. In code, we almost never really distinguish the two. In the lua code, we use a plain pair of floats x and y for both, and in an object oriented framework we would just use a point or vector class, not both.
+Yes and no. In code, we almost never really distinguish the two. In our functional lua code, we use a plain pair of floats x and y for both, and in an object oriented framework we would just use a point or vector class, not both.
 
 However there is an important difference between them. A point defines a coordinate, a vector defines a direction and distance. When we transform points and vectors to a different coordinate system, points are translated, rotated and scaled. Vectors however are only ever rotated and scaled, never translated.
 
@@ -218,5 +221,9 @@ function cw(x, y)
     return y, -x
 end
 {% endhighlight %}
+
+### A note on notation
+
+A point $$(x, y)$$ is written with round brackets, while I use square brackets to indicate that we're talking about a vector $$\langle x, y\rangle$$. When working with named vectors, I use an arrow $$\overrightarrow{a}$$ or in case of a unit vector a hat $$\hat{a}$$.
 
 [Next - Angles](2-angles.html)

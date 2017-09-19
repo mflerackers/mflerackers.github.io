@@ -16,57 +16,64 @@ Imagine for example a cart on a slope. Given a vector made from two points on th
 
 Or imagine for example a character jumping along an irregular polygon wall, when its collision circle collides with the wall, we can calculate the closest point to the wall by projecting the vector from one of the points on the wall to the circle's center onto the wall vector.
 
+Before we can project points onto lines, we first need to get a basic understanding of how a vector can be projected onto another vector
+
 ## Calculating the projection of a vector onto another vector
 
-If we look at the picture below, we see $$A'$$ which is the projection of the vector $$\overrightarrow{CA}$$ or $$\hat{a}$$ onto $$\overrightarrow{CB}$$ or $$\hat{b}$$. The goal is to calculate $$A'$$ in terms of $$\hat{a}$$ and $$\hat{b}$$.
+If we look at the picture below, we see $$\vec{a_1}$$ which is the projection of the vector $$\vec{a}$$ onto $$\vec{b}$$. The goal is to calculate $$\vec{a_1}$$ in terms of $$\vec{a}$$ and $$\vec{b}$$.
 
 ![proj_unrotated](/assets/proj_unrotated.png)
 
-To make this task easier, or at least more intuitive, we are going to rotate this setup. Let's arrange the vector $$\hat{b}$$ so that it is parallel with the x-axis.
+To make this task easier, or at least more intuitive, we are going to rotate this setup. Let's arrange the vector $$\vec{b}$$ so that it is parallel with the x-axis.
 
 ![proj_unscaled_equal](/assets/proj_unscaled_equal.png)
 
-If we look at point $$A'$$ now, we see that $$A'=(x, 0)$$ if $$A=(x,y)$$. Now let's scale our setup, so that $$A$$ is lying on the unit circle, a circle with as radius 1. In this case we see that $$x$$ is equal to the cosine of $$\alpha$$.
+If we look at the vector $$\vec{a}$$ now, we see that $$\vec{a_1}=\langle x, 0\rangle$$ if $$\vec{a}=\langle x,y\rangle$$. Now let's scale our setup, so that $$\vec{a}$$ is lying on the unit circle, a circle with as radius 1. In this case we see that $$x$$ is equal to the cosine of $$\alpha$$, which is the angle between $$\vec{a}$$ and $$\vec{b}$$.
 
 ![proj_cos](/assets/proj_cos.png)
 
 $$x=cos(\alpha)$$
 
-Of course in our second rotated but unscaled scenario, the vector $$\overrightarrow{CA}$$ doesn't necessarily have a length equal to 1. Both $$A$$ and $$A'$$ are scaled by the length of $$\overrightarrow{CA}$$. This means that to go back to the second scenario, have to multiply by the length of $$\overrightarrow{CA}$$ to correct the scale.
+Of course in our second rotated but unscaled scenario, the vector $$\vec{a}$$ doesn't necessarily have a length equal to 1. Both $$\vec{a}$$ and $$\vec{a_1}$$ are scaled by the length of $$\vec{a}$$. This means that to go back to the second scenario, have to multiply by the length of $$\vec{a}$$ to correct the scale.
 
-$$x=\lvert\overrightarrow{CA}\lvert cos(\alpha)=\lvert \hat{a}\lvert cos(\alpha)\quad(1)$$
+$$x=\lvert\vec{a}\lvert cos(\alpha)\quad(1)$$
 
-We don't want $$\alpha$$ in our equation, as we want a solution with just the two vectors $$\hat{a}$$ and $$\hat{b}$$. We can use the dot product, since the cosine of an angle is equal to the dot product of the vectors that form the angle if the vectors are normalized
+As we stated before, we don't want the angle $$\alpha$$ in our equation, as we want a solution with just the two vectors $$\vec{a}$$ and $$\vec{b}$$. We can use the dot product, since the cosine of an angle is equal to the dot product of the vectors that form the angle if the vectors are normalized
 
 $$cos(\alpha)=\hat{a}.\hat{b}$$
 
-A normalized vector is one whose length is 1, thus it is obtained by dividing a vector by its length. Doing this with vectors a and b gives
+A normalized vector is one whose length is 1, thus it is obtained by dividing a vector by its length. Doing this with vectors $$\vec{a}$$ and $$\vec{b}$$ gives
 
-$$cos(\alpha)=\frac{a.b}{\lvert a\lvert\lvert b\lvert}\quad(2)$$
+$$cos(\alpha)=\frac{\vec{a}.\vec{b}}{\lvert \vec{a}\lvert\lvert \vec{b}\lvert}\quad(2)$$
 
 Substituting the cosine in (1) by (2) gives
 
-$$x=\lvert a\lvert\frac{a.b}{\lvert a\lvert\lvert b\lvert}$$
+$$x=\lvert \vec{a}\lvert\frac{\vec{a}.\vec{b}}{\lvert \vec{a}\lvert\lvert \vec{b}\lvert}$$
 
-Or simplified, since we can ignore multiplying and dividing by the same factor $$\lvert a\lvert$$
+Or simplified, since we can ignore multiplying and dividing by the same factor $$\lvert \vec{a}\lvert$$
 
-$$x=\frac{a.b}{\lvert b\lvert}$$
+$$x=\frac{\vec{a}.\vec{b}}{\lvert \vec{b}\lvert}$$
 
-Our projection of point $$A$$ in scenario 2 is thus point $$A'=(x,0)$$ or $$A'=x*(1,0)$$. 
+Our projection of vector $$\vec{a}$$ in scenario 2 is was the vector $$\vec{a_1}=\langle x,0\rangle$$ or $$\vec{a_1}=x*\langle 1,0\rangle$$, substituting $$x$$ gives
 
-$$A'=\frac{a.b}{\lvert b\lvert}(1, 0)$$
+$$\vec{a_1}=\frac{\vec{a}.\vec{b}}{\lvert \vec{b}\lvert}(1, 0)$$
 
-We chose $$\overrightarrow{CB}$$ to be parallel with the x-axis to clearly see that x was equal to the scaled cosine. But in our original scenario $$\overrightarrow{CB}$$ is not parallel to the x-axis. the only difference with scenario one and two is that we rotated everything. This rotation kept the sizes of the vectors as well as the angle between them intact. The only difference that affects the outcome is that $$b$$ is rotated. As we can see,the projected point $$A'$$ always lies somewhere along $$b$$. In scenario two, $$A'$$ only lies along the x-axis because b is parallel with it. The vector $$(1,0)$$ is nothing more than the normalized vector $$\hat{b}$$. Thus our projection of a on b in scenario one is
+We chose $$\vec{b}$$ to be parallel with the x-axis to clearly see that $$x$$ was equal to the scaled cosine. But in our original scenario $$\vec{b}$$ is not parallel to the x-axis. the only difference with scenario one and two is that we rotated everything. This rotation kept the sizes of the vectors as well as the angle between them intact. The only difference that affects the outcome is that $$\vec{b}$$ is rotated. As we can see, the projected point $$\vec{a_1}$$ always lies somewhere along $$\vec{b}$$. In scenario two, $$\vec{a_1}$$ only lies along the x-axis because $$\vec{b}$$ is parallel with it. The vector $$\langle 1,0\rangle$$ is nothing more than the normalized vector $$\hat{b}$$. Thus our projection of $$\vec{a}$$ on $$\vec{b}$$ in scenario one is
 
-$$proj(a,b)=\frac{a.b}{\lvert b\lvert}\hat{b}$$
+$$proj(\vec{a},\vec{b})=\frac{\vec{a}.\vec{b}}{\lvert \vec{b}\lvert}\hat{b}$$
 
-Since $$\hat{b}$$ is equal to $$b$$ divided by it's length $$\lvert b\lvert$$ we can write
+Since $$\hat{b}$$ is equal to $$\vec{b}$$ divided by it's length $$\lvert \vec{b}\lvert$$ we can write
 
-$$proj(a,b)=\frac{a.b}{ {\lvert b\lvert}^2}b$$
+$$proj(\vec{a},\vec{b})=\frac{\vec{a}.\vec{b}}{ {\lvert \vec{b}\lvert}^2}\vec{b}$$
 
-And since the length $$\lvert b\lvert$$ is the square root of the dot product of b with itself or $$\lvert b\lvert=\sqrt{b.b}$$ we get
+And since the length $$\lvert \vec{b}\lvert$$ is the square root of the dot product of $$\vec{b}$$ with itself or $$\lvert \vec{b}\lvert=\sqrt{\vec{b}.\vec{b}}$$ we get
 
-$$proj(a,b)=\frac{a.b}{b.b}b$$
+$$proj(\vec{a},\vec{b})=\frac{\vec{a}.\vec{b}}{\vec{b}.\vec{b}}\vec{b}$$
 
-So the projection of $$a$$ on $$b$$ is the dot product of $$a$$ and $$b$$ divided by the dot product of $$b$$ with itself multiplied with b.
+So the projection of $$\vec{a}$$ on $$\vec{b}$$ is the dot product of $$\vec{a}$$ and $$\vec{b}$$ divided by the dot product of $$\vec{b}$$ with itself multiplied with $$\vec{b}$$.
 
+{% highlight lua %}
+function project(x1, y1, x2, y2)
+    return mul(dot(x1, y1, x2, y2) / dot(x2, y2, x2, y2), x2, y2)
+end
+{% endhighlight %}

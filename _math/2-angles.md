@@ -4,7 +4,8 @@ title: Angles
 math: true
 ---
 
-[Previous - Points and Vectors](1-points-and-vectors.html)
+| : ---- : |
+| [Previous - Points and Vectors](1-points-and-vectors.html) | [Next - Vector projection](3-vector-projection.html) |
 
 # [Math for game development](../) : Angles
 
@@ -28,12 +29,12 @@ Some game engines use angles from 0 to 360 degrees or from 0 to 1 percent instea
 ### Angle to vector
 Lets look at some vectors and the angles they represent.
 
-| vector  | angle              |
-| ------- | ------------------ |
-| (1, 0)  | 0 or $$\pi$$       |
-| (0, 1)  | $$\frac{\pi}{2}$$  |
-| (-1, 0) | $$\pi$$            |
-| (0, -1) | $$\frac{3\pi}{2}$$ |
+| vector                   | angle              |
+| ------------------------ | ------------------ |
+| $$\langle 1, 0\rangle$$  | 0 or $$\pi$$       |
+| $$\langle 0, 1\rangle$$  | $$\frac{\pi}{2}$$  |
+| $$\langle -1, 0\rangle$$ | $$\pi$$            |
+| $$\langle 0, -1\rangle$$ | $$\frac{3\pi}{2}$$ |
 
 Unfortunately, there is no easy way to go from an angle to a direction and back. We need trigonometric functions to do this, which are rather slow compared to normal operations. To go from an angle to a direction vector, we use cosine and sine. These give the x and y of the normalized vector representing the direction.
 
@@ -126,7 +127,7 @@ end
 ## Rotation
 
 ### Rotation around the origin
-We will start by trying to rotate the normalized vector $$\vec{b}$$ by $$\alpha$$ radians. If we have the normalized vector $$\vec{b}$$ pointing in the direction of $$\beta$$ radians, it can be written as $$\vec{b}=(cos(\beta), sin(\beta))$$. Similarly, we can write the angle $$\alpha$$ as the normalized vector $$\vec{a} =(cos(\alpha), sin(\alpha))$$ pointing in the direction of $$\alpha$$. As we saw before, for normalized vectors, the cosine of the angle between two vectors was equal to the dot product of the two vectors, while the sine of the angle between two vectors was equal to the cross product. The angle between the vectors $$\vec{a}$$ and $$\vec{b}$$ is equal to $$\alpha-\beta$$, so we can write
+We will start by trying to rotate the normalized vector $$\vec{b}$$ by $$\alpha$$ radians. If we have the normalized vector $$\hat{b}$$ pointing in the direction of $$\beta$$ radians, it can be written as $$\hat{b}=(cos(\beta), sin(\beta))$$. Similarly, we can write the angle $$\alpha$$ as the normalized vector $$\hat{a} =(cos(\alpha), sin(\alpha))$$ pointing in the direction of $$\alpha$$. As we saw before, for normalized vectors, the cosine of the angle between two vectors was equal to the dot product of the two vectors, while the sine of the angle between two vectors was equal to the cross product. The angle between the vectors $$\hat{a}$$ and $$\hat{b}$$ is equal to $$\alpha-\beta$$, so we can write
 
 $$cos(\alpha-\beta)=cos(\beta)*cos(\alpha)+sin(\beta)*sin(\alpha)$$
 
@@ -201,9 +202,9 @@ $$x'=x*cos(\alpha)-y*sin(\alpha)$$
 
 $$y'=x*sin(\alpha)+y*cos(\alpha)$$
 
-We can replace the sine and cosine of $$\alpha$$ with the normalized vector $$v$$
+We can replace the sine and cosine of $$\alpha$$ with the normalized vector $$\hat{v}$$
 
-$$v=\langle cos(\alpha), sin(\alpha)\rangle$$
+$$\hat{v}=\langle cos(\alpha), sin(\alpha)\rangle$$
 
 giving
 
@@ -242,4 +243,5 @@ function followTarget(x, y, tx, ty, points)
 end
 {% endhighlight %}
 
-[Previous - Points and Vectors](1-points-and-vectors.html)
+| : ---- : |
+| [Previous - Points and Vectors](1-points-and-vectors.html) | [Next - Vector projection](3-vector-projection.html) |
