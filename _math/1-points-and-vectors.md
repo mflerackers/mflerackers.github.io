@@ -130,6 +130,8 @@ In 3 dimensions this product would produce a vector, namely the vector perpendic
 Combined, the dot and cross products can be used to rotate points.
 As these two products have many applications. I would suggest that if you want to memorize anything, memorize these two products, as they can be used in many ways.
 
+** Note that unlike for the dot product, the order of the vectors in the cross product matters. If the order of the vectors is switched, the sign is flipped. This is because the order determines which angle between the vectors is chosen, the smaller or the greater angle. **
+
 ### The length of a vector
 
 If we take the dot product of a vector with itself, we obtain its length squared. 
