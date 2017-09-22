@@ -65,13 +65,32 @@ function intersectLines(x1, y1, x2, y2, x3, y3, x4, y4)
     x2, y2 = x2 - x1, y2 - y1
     x4, y4 = x4 - x3, y4 - y3
     local divisor = cross(x2, y2, x4, y4)
-    if cross < 0.00001 then return nil
-    return cross(x3 - x1, y3 - y1) / divisor
+    if divisor < 0.00001 then return nil end
+    local t = cross(x3 - x1, y3 - y1) / divisor
+    return x3 + s * x4, y3 + s * y4
 end
 {% endhighlight %}
 
 ### Line segments
 
-Sometimes our lines don't go to infinity in both directions, but have given boundaries. Line segments are not much different in usage, except for some extra testing to make sure we are actually still on the line segment. Given a segment between points $$a$$ and $$b$$, we get 
+Sometimes our lines don't go to infinity in both directions, but have given boundaries. Line segments are not much different in usage, except for some extra testing to make sure we are actually still on the line segment. Given a segment between points $$a$$ and $$b$$, we saw we could define the line as
 
 $$p=a+s*\vec{ab}$$
+
+We can see that if s is 0, p is equal to a, while if s is 1, p is equal to b. Any value of s not between 0 and 1 gives a point outside of the line segment.
+
+### Line segment intersection
+
+Given what we know from line intersection, intersecting a line or line segment with another line is not so hard. We only need to be sure that the intersection point is actually within the segment(s). This is simple if we have s for the point on the segment. If s is outside the interval [0,1], the point is outside the range of the segment.
+
+{% highlight lua %}
+function intersectLineLineSegment(x1, y1, x2, y2, x3, y3, x4, y4)
+    x2, y2 = x2 - x1, y2 - y1
+    x4, y4 = x4 - x3, y4 - y3
+    local divisor = cross(x2, y2, x4, y4)
+    if divisor < 0.00001 then return nil end
+    local t = cross(x3 - x1, y3 - y1) / divisor
+    if t < 0 or t > 1 then return nil end
+    return x3 + t * x4, y3 + t * y4 
+end
+{% endhighlight %}
