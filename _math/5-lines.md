@@ -66,7 +66,7 @@ function intersectLines(x1, y1, x2, y2, x3, y3, x4, y4)
     x4, y4 = x4 - x3, y4 - y3 -- cd
     local divisor = cross(x4, y4, x2, y2)
     if divisor < 0.00001 then return nil end
-    local t = cross(x3 - x1, y3 - y1, x2, y2) / divisor
+    local t = cross(x1 - x3, y1 - y3, x2, y2) / divisor
     return x3 + t * x4, y3 + t * y4
 end
 {% endhighlight %}
@@ -89,7 +89,7 @@ function intersectLineLineSegment(x1, y1, x2, y2, x3, y3, x4, y4)
     x4, y4 = x4 - x3, y4 - y3                           -- cd
     local divisor = cross(x4, y4, x2, y2)               -- cd x ab
     if divisor < 0.00001 then return nil end
-    local t = cross(x3 - x1, y3 - y1, x2, y2) / divisor -- ca x ab / cd x ab
+    local t = cross(x1 - x3, y1 - y3, x2, y2) / divisor -- ca x ab / cd x ab
     if t < 0 or t > 1 then return nil end
     return x3 + t * x4, y3 + t * y4                     -- c + t * cd
 end
