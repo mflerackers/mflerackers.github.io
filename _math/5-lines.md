@@ -56,7 +56,7 @@ This means t is
 
 $$\frac{\vec{ca}\times\vec{ab}}{\vec{cd}\times\vec{ab}}=t$$
 
-Before we go on, let's note that $$\vec{cd}\times\vec{ab}$$ can be 0, and we shouldn't divide by 0. This cross product is zero when our lines are parallel and thus have no intersection. Remember, the cross product gives us the sine of the angle (multiplied with a factor if the vectors are not normalized). The sine is 0 in the cases of 0 and 180 degrees. If there's and angle of 0 degrees between the lines, they are definitely parallel.
+Before we go on, let's note that $$\vec{cd}\times\vec{ab}$$ can be 0, and we shouldn't divide by 0. This cross product is zero when our lines are parallel and thus have no intersection. Remember, the cross product gives us the sine of the angle (multiplied with a factor if the vectors are not normalized). The sine is 0 in the cases of 0 and 180 degrees. If there's an angle of 0 degrees between the lines, they are definitely parallel.
 
 Now that we know t, we can calculate the point p from $$p=c+t*\vec{cd}$$. This gives us the intersection point.
 
@@ -64,10 +64,23 @@ Now that we know t, we can calculate the point p from $$p=c+t*\vec{cd}$$. This g
 function intersectLines(x1, y1, x2, y2, x3, y3, x4, y4)
     x2, y2 = x2 - x1, y2 - y1 -- ab
     x4, y4 = x4 - x3, y4 - y3 -- cd
-    local divisor = cross(x4, y4, x2, y2)
-    if divisor < 0.00001 then return nil end
-    local t = cross(x1 - x3, y1 - y3, x2, y2) / divisor
+    local t = cross(x4, y4, x2, y2)
+    if t < 0.00001 and t > -0.00001 then return nil end
+    t = cross(x1 - x3, y1 - y3, x2, y2) / t
     return x3 + t * x4, y3 + t * y4
+end
+{% endhighlight %}
+
+### Point on line
+
+Let's say we have the line through the points a and b, and we need to know whether c is on the same line. Remember how we tested for parallel lines using the cross product? That is exactly what we need now. If we build a vector from a to c called ac, and cross it with the vector ab, the result is 0 if c lies on ab.
+
+{% highlight lua %}
+function pointOnLine(x1, y1, x2, y2, x3, y3)
+    x2, y2 = x2 - x1, y2 - y1 -- ab
+    x3, y3 = x3 - x1, y3 - y1 -- ac
+    local t = cross(x2, y2, x3, y3)
+    return t < 0.00001 and t > -0.00001
 end
 {% endhighlight %}
 
@@ -87,10 +100,31 @@ Given what we know from line intersection, intersecting a line or line segment w
 function intersectLineLineSegment(x1, y1, x2, y2, x3, y3, x4, y4)
     x2, y2 = x2 - x1, y2 - y1                           -- ab
     x4, y4 = x4 - x3, y4 - y3                           -- cd
-    local divisor = cross(x4, y4, x2, y2)               -- cd x ab
-    if divisor < 0.00001 then return nil end
-    local t = cross(x1 - x3, y1 - y3, x2, y2) / divisor -- ca x ab / cd x ab
+    local t = cross(x4, y4, x2, y2)               -- cd x ab
+    if t < 0.00001 and t > -0.00001 then return nil end
+    t = cross(x1 - x3, y1 - y3, x2, y2) / t -- ca x ab / cd x ab
     if t < 0 or t > 1 then return nil end
     return x3 + t * x4, y3 + t * y4                     -- c + t * cd
+end
+{% endhighlight %}
+
+### Point on line segment
+
+We first need to test whether the point lies on the line using the cross product as before.
+
+If it does, we need to test whether it lies between the segment's bounderies. We can do this second step partly by calculating the dot product, like when we did vector projection. If the dot product is smaller than 0, the point lies before the start of the segment, as the angle is greater than 90 degrees in that case.
+
+To know whether the point doesn't lie past the end of the segment, we can look whether the dot product of ac with itself is smaller than the dot product of ab with itself, as the dot product gives us the length squared.
+
+{% highlight lua %}
+function pointOnLine(x1, y1, x2, y2, x3, y3)
+    x2, y2 = x2 - x1, y2 - y1 -- ab
+    x3, y3 = x3 - x1, y3 - y1 -- ac
+    local t = cross(x2, y2, x3, y3)
+    if t < 0.00001 and t > -0.00001 then return false end
+    t = dot(x2, y2, x3, y3)
+    if t < 0 then return false end
+    t = dot(x3, y3, x3, y3)
+    return t <= dot(x2, y2, x2, y2)
 end
 {% endhighlight %}
