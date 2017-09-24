@@ -62,12 +62,14 @@ Now that we know t, we can calculate the point p from $$p=c+t*\vec{cd}$$. This g
 
 {% highlight lua %}
 function intersectLines(x1, y1, x2, y2, x3, y3, x4, y4)
-    x2, y2 = x2 - x1, y2 - y1 -- ab
-    x4, y4 = x4 - x3, y4 - y3 -- cd
-    local t = cross(x4, y4, x2, y2)
-    if t < 0.00001 and t > -0.00001 then return nil end
-    t = cross(x1 - x3, y1 - y3, x2, y2) / t
-    return x3 + t * x4, y3 + t * y4
+    x2, y2 = x2 - x1, y2 - y1               -- ab
+    x4, y4 = x4 - x3, y4 - y3               -- cd
+    local t = cross(x4, y4, x2, y2)         -- cd x ab
+    if t < 0.00001 and t > -0.00001 then
+        return nil
+    end
+    t = cross(x1 - x3, y1 - y3, x2, y2) / t -- ca x ab / cd x ab
+    return x3 + t * x4, y3 + t * y4         -- c + t * cd
 end
 {% endhighlight %}
 
@@ -81,10 +83,9 @@ function pointOnLine(x1, y1, x2, y2, x3, y3)
     x3, y3 = x3 - x1, y3 - y1 -- ac
     local t = cross(x2, y2, x3, y3)
     return t < 0.00001 and t > -0.00001
-end
 {% endhighlight %}
 
-### Line segments
+## Line segments
 
 Sometimes our lines don't go to infinity in both directions, but have given boundaries. Line segments are not much different in usage, except for some extra testing to make sure we are actually still on the line segment. Given a segment between points $$a$$ and $$b$$, we saw we could define the line as
 
@@ -98,33 +99,41 @@ Given what we know from line intersection, intersecting a line or line segment w
 
 {% highlight lua %}
 function intersectLineLineSegment(x1, y1, x2, y2, x3, y3, x4, y4)
-    x2, y2 = x2 - x1, y2 - y1                           -- ab
-    x4, y4 = x4 - x3, y4 - y3                           -- cd
-    local t = cross(x4, y4, x2, y2)               -- cd x ab
-    if t < 0.00001 and t > -0.00001 then return nil end
+    x2, y2 = x2 - x1, y2 - y1               -- ab
+    x4, y4 = x4 - x3, y4 - y3               -- cd
+    local t = cross(x4, y4, x2, y2)         -- cd x ab
+    if t < 0.00001 and t > -0.00001 then
+        return nil
+    end
     t = cross(x1 - x3, y1 - y3, x2, y2) / t -- ca x ab / cd x ab
-    if t < 0 or t > 1 then return nil end
-    return x3 + t * x4, y3 + t * y4                     -- c + t * cd
+    if t < 0 or t > 1 then
+        return nil
+    end
+    return x3 + t * x4, y3 + t * y4         -- c + t * cd
 end
 {% endhighlight %}
 
 ### Point on line segment
 
-We first need to test whether the point lies on the line using the cross product as before.
+We first need to test whether the point lies on the line using the cross product as we did before for infinite lines.
 
-If it does, we need to test whether it lies between the segment's bounderies. We can do this second step partly by calculating the dot product, like when we did vector projection. If the dot product is smaller than 0, the point lies before the start of the segment, as the angle is greater than 90 degrees in that case.
+If the point is on the line, we need to test whether it lies between the segment's boundaries. We can do this second step partly by calculating the dot product, like when we did vector projection. If the dot product is smaller than 0, the point lies before the start of the segment, as the angle is greater than 90 degrees in that case.
 
-To know whether the point doesn't lie past the end of the segment, we can look whether the dot product of ac with itself is smaller than the dot product of ab with itself, as the dot product gives us the length squared.
+To be sure that the point doesn't lie past the end of the segment, we can look whether the dot product of $$\vec{ac}$$ with itself is smaller than the dot product of $$\vec{ab}$$ with itself, as the dot product gives us the length squared.
 
 {% highlight lua %}
-function pointOnLine(x1, y1, x2, y2, x3, y3)
-    x2, y2 = x2 - x1, y2 - y1 -- ab
-    x3, y3 = x3 - x1, y3 - y1 -- ac
-    local t = cross(x2, y2, x3, y3)
-    if t < 0.00001 and t > -0.00001 then return false end
-    t = dot(x2, y2, x3, y3)
-    if t < 0 then return false end
-    t = dot(x3, y3, x3, y3)
-    return t <= dot(x2, y2, x2, y2)
+function pointOnLineSegment(x1, y1, x2, y2, x3, y3)
+    x2, y2 = x2 - x1, y2 - y1               -- ab
+    x3, y3 = x3 - x1, y3 - y1               -- ac
+    local t = cross(x2, y2, x3, y3)         -- ab x ac
+    if t > 0.00001 or t < -0.00001 then
+        return false
+    end
+    t = dot(x2, y2, x3, y3)                 -- ab . ac
+    if t < 0 then
+        return false
+    end
+    t = dot(x3, y3, x3, y3)                 -- ac . ac
+    return t <= dot(x2, y2, x2, y2)         -- ab . ab
 end
 {% endhighlight %}
