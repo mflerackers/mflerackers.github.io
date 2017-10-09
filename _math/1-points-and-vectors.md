@@ -14,11 +14,15 @@ Scalars are one dimensional, they are simply numbers, though they might have a c
 
 ## Points
 
-A two dimensional point, defined as (x, y) describes a position or coordinate in a 2D world. However even in a 3D world, screen space coordinates will be two dimensional. Screen space is where the pixels of your screen live, while world space is where the objects of your game live. In anything but the simplest game, world and screen space will not perfectly match. When they don't match, world space points have to be transformed from world space to screen space.
+A two dimensional point, defined as $$(x, y)$$ describes a position or coordinate in a 2D world. It can be the position of a tree, the points of a polygon describing a region, the waypoints for a character path or the points of an animation curve. However 2D points are not limited to games with a 2D world. Even in a 3D world, screen space coordinates will be two dimensional. 
+
+### World and screen space
+
+Screen space is where the pixels of your screen live, while world space is where the objects of your game live. In anything but the simplest game, world and screen space will not perfectly match. When they don't match, world space points have to be transformed from world space to screen space.
 
 For example, most mobile games need to scale from world space to screen space. Your game's world space coordinates might be set in a fixed resolution, which are scaled to the full screen size of the phone or tablet it runs on. If the aspect ratio of the phone or tablet doesn't match, the world might have to be translated as well to center it on the screen. Sometimes the world is larger than the screen, think side-scroller or a world map in an RTS or RPG game. In this case we need to transform our world so that a piece of it is both translated and scaled to fit on the screen.
 
-Note that we are not scaling pixels, but rather the corners of sprites or the points of a polygon. Once these positions are transformed, we can render the actual world to pixels. Also note that we can not really talk about scaling an individual point, because what scales is their position relative from each other.
+Note that we are not scaling pixels, but rather the corners of sprites or the points of a polygon. Once these positions are transformed, we can render the actual world to pixels. Also note that we can not really talk about scaling an individual point, because what scales is their position relative to each other.
 
 ### Scaling from the origin
 
@@ -31,9 +35,7 @@ $$
 {% highlight lua %}
 
 function mul(s, x, y)
-
 ​    return x * s, y *s
-
 end
 
 {% endhighlight %}
@@ -42,13 +44,13 @@ To determine the scale in case of matching the world with a device screen, we si
 
 We can also do a non-uniform scale by using different factors for x and y. While this stretches the image, it is very often useful in situations where you need to make a certain element longer or higher depending on the size of something else, for example a button in a GUI. In this case the corners will have a uniform scale while the sides and center have a non-uniform scale.
 
-Until now, all our scaling will work from the center.  The point $$(0,0)$$  is the only point which doesn't change. As
+Until now, all our scaling will work from the center.  The point $$(0,0)$$  is the only point which doesn't change. As whatever scaling factor we use, when multiplied with zero, it gives us zero
 
 $$
 s(0,0)=(0,0)
 $$
 
-If the scale is larger than 1, all other points drift away from from the origin. If the scale is smaller than 1, all other points will drift towards (0, 0). All this is not very useful without being able to translate though, so let's move on.
+If the scale is larger than 1, all other points drift away from from the origin. If the scale is smaller than 1, all other points will drift towards $$(0, 0)$$. All this is not very useful without being able to translate though, so let's move on.
 
 ## Vectors
 
