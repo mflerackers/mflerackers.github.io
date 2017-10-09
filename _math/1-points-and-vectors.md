@@ -9,27 +9,49 @@ math: true
 # [Math for game development](../) : Points and Vectors
 
 ## Scalars
-A scalar has one dimension, so we could as well have called it a number.
-## Points
-A 2 dimensional point, defined as (x, y) describes a position or coordinate in 2D. Points can define the position of an object or camera. They can define a path or way-points which a character needs to follow. Or they can define the shape of an object as for example the points of a polygon.
-A point doesn't have to define a global position on the screen. In the case of a moving polygon, the points can define the polygon in a local coordinate system. These points are then transformed to the global coordinate system before being transformed to the screen to be drawn.
-### Scaling from the origin
-At this stage we can't move or rotate yet, but we can scale. Scaling a point or set of points is done by multiplying each dimension with a scalar.
 
-$$(x',y') = s(x, y)=(s*x, s*y)$$
+Scalars are one dimensional, they are simply numbers, though they might have a certain metric associated with them, like meters per second or degrees. They are used for the speed of a car, the angle of a wheel or a uniform zoom factor for example.
+
+## Points
+
+A two dimensional point, defined as (x, y) describes a position or coordinate in a 2D world. However even in a 3D world, screen space coordinates will be two dimensional. Screen space is where the pixels of your screen live, while world space is where the objects of your game live. In anything but the simplest game, world and screen space will not perfectly match. When they don't match, world space points have to be transformed from world space to screen space.
+
+For example, most mobile games need to scale from world space to screen space. Your game's world space coordinates might be set in a fixed resolution, which are scaled to the full screen size of the phone or tablet it runs on. If the aspect ratio of the phone or tablet doesn't match, the world might have to be translated as well to center it on the screen. Sometimes the world is larger than the screen, think side-scroller or a world map in an RTS or RPG game. In this case we need to transform our world so that a piece of it is both translated and scaled to fit on the screen.
+
+Note that we are not scaling pixels, but rather the corners of sprites or the points of a polygon. Once these positions are transformed, we can render the actual world to pixels. Also note that we can not really talk about scaling an individual point, because what scales is their position relative from each other.
+
+### Scaling from the origin
+
+While we can't translate yet, we can do a uniform scale in order to do some zoom operations. To transform a point with a uniform scale factor s, a scalar, we simply multiply both $$x$$ and $$y$$ with s.
+
+$$
+(x',y') = s(x, y)=(s*x, s*y)
+$$
 
 {% highlight lua %}
+
 function mul(s, x, y)
-    return x * s, y *s
+
+​    return x * s, y *s
+
 end
+
 {% endhighlight %}
 
-It should be noted however that the origin of the scale is (0, 0). This means that everything scales with respect of the origin. This is logical of course, as the origin is the only point that isn't affected 
+To determine the scale in case of matching the world with a device screen, we simply use min(screen_width/world_width, screen_height/world_height). This gives us a scale which makes both width and height fit inside the screen, preserving the aspect ratio.
 
-$$s(0,0)=(0,0)$$ 
+We can also do a non-uniform scale by using different factors for x and y. While this stretches the image, it is very often useful in situations where you need to make a certain element longer or higher depending on the size of something else, for example a button in a GUI. In this case the corners will have a uniform scale while the sides and center have a non-uniform scale.
 
-All the other points will move away from the origin when the scale factor is greater than 1 or move towards the origin when the scale factor is smaller than 1.
+Until now, all our scaling will work from the center.  The point $$(0,0)$$  is the only point which doesn't change. As
+
+$$
+s(0,0)=(0,0)
+$$
+
+If the scale is larger than 1, all other points drift away from from the origin. If the scale is smaller than 1, all other points will drift towards (0, 0). All this is not very useful without being able to translate though, so let's move on.
+
 ## Vectors
+
 When we subtract two points, we get a vector. Vectors are also defined as a pair $$\langle x, y\rangle$$, however the x and y are no longer a position, but rather define a direction and distance from the origin. A vector $$\langle x, y\rangle$$ can be thought of as an arrow starting from $$(0, 0)$$ towards $$(x, y)$$. The further a vector is from the origin, the greater its magnitude.
 If we have two points a and b, we can build the vector $\vec{ab}$ by subtracting a from b.
 
