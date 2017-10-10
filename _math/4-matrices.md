@@ -4,7 +4,8 @@ title: Transformations as matrices
 math: true
 ---
 
-[Previous - Vector projection](3-vector-projection.html)
+| : ---- : |
+| [Previous - Vector projection](3-vector-projection.html) | [Next - Lines](5-lines.html) |
 
 # [Math for game development](../) : Transformations as matrices
 
@@ -59,19 +60,33 @@ w
 
 The point or vector (x, y, w) can be transformed by calculating
 
-$$x'=x*a+y*b+w*c$$ $$y'=x*d+y*e+w*f$$ $$w'=x*g+y*h+w*i$$
+$$x'=x*a+y*b+w*c$$
+
+$$y'=x*d+y*e+w*f$$
+
+$$w'=x*g+y*h+w*i$$
 
 Which is the matrix product of a $3\times3$ matrix with a $1\times3$ matrix. Matrices can only be multiplied if the amount of columns of the first matrix matches the amount of rows of the second. This is why we write our vector as a column. Keen observers will notice that the elements of our resulting vector are the dot products of the rows of the matrix with the input vector.
 
-$$x'=(a, b, c).(x, y, w)$$ $$y'=(d, e, f).(x, y, w)$$ $$w'=(g, h, i).(x, y, w)$$
+$$x'=(a, b, c).(x, y, w)$$
+
+$$y'=(d, e, f).(x, y, w)$$
+
+$$w'=(g, h, i).(x, y, w)$$
 
 We are not going to use general matrices, but are going to focus on linear transformations. In our case, the last row of a matrix {g, h, i} is always {0, 0, 1} so we never need to store this row, and it's values can be hard coded into multiplication formula.
 
-$$x'=x*a+y*b+w*c$$ $$y'=x*d+y*e+w*f$$ $$w'=x*0+y*0+w*1=w$$
+$$x'=x*a+y*b+w*c$$ 
+
+$$y'=x*d+y*e+w*f$$ 
+
+$$w'=x*0+y*0+w*1=w$$
 
 You might be wondering what the w is doing here Since we are doing 2D, there shouldn't be a third dimension. The w is a convenience in case you want to transform both points and vectors. A point would have w equal to 1, while a vector would use w equal to 0. This makes sure a point is translated and a vector not. Since we are going to transform points, we can keep w equal to 1.
 
-$$x'=x*a+y*b+c$$ $$y'=x*d+y*e+f$$
+$$x'=x*a+y*b+c$$ 
+
+$$y'=x*d+y*e+f$$
 
 ## The identity matrix
 

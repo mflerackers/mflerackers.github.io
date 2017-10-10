@@ -4,7 +4,9 @@ title: Vector projection
 math: true
 ---
 
-[Previous - Points and Vectors](2-angles.html)
+| : ---- : |
+| [Previous - Points and Vectors](2-angles.html) | [Next - Matrices](4-matrices.html) |
+
 
 # [Math for game development](../) : Vector projection
 
