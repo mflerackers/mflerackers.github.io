@@ -66,7 +66,7 @@ $$y'=x*d+y*e+w*f$$
 
 $$w'=x*g+y*h+w*i$$
 
-Which is the matrix product of a $3\times3$ matrix with a $1\times3$ matrix. Matrices can only be multiplied if the amount of columns of the first matrix matches the amount of rows of the second. This is why we write our vector as a column. Keen observers will notice that the elements of our resulting vector are the dot products of the rows of the matrix with the input vector.
+Which is the matrix product of a $$3\times3$$ matrix with a $$1\times3$$ matrix. Matrices can only be multiplied if the amount of columns of the first matrix matches the amount of rows of the second. This is why we write our vector as a column. Keen observers will notice that the elements of our resulting vector are the dot products of the rows of the matrix with the input vector.
 
 $$x'=(a, b, c).(x, y, w)$$
 
