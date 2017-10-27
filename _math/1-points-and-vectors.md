@@ -33,9 +33,11 @@ $$
 $$
 
 {% highlight lua %}
+
 function mul(s, x, y)
 ​    return x * s, y *s
 end
+
 {% endhighlight %}
 
 To determine the scale in case of matching the world with a device screen, we simply use min(screen_width/world_width, screen_height/world_height). This gives us a scale which makes both width and height fit inside the screen, preserving the aspect ratio.
@@ -51,6 +53,7 @@ $$
 If the scale is larger than 1, all other points drift away from from the origin. If the scale is smaller than 1, all other points will drift towards $$(0, 0)$$. All this is not very useful without being able to translate though, so let's move on.
 
 ## Vectors
+
 When we subtract two points, we get a vector. Vectors are also defined as a pair $$\langle x, y\rangle$$, however the x and y are no longer a position, but rather define a direction and distance from the origin. A vector $$\langle x, y\rangle$$ can be thought of as an arrow starting from $$(0, 0)$$ towards $$(x, y)$$. The further a vector is from the origin, the greater its magnitude.
 If we have two points a and b, we can build the vector $\vec{ab}$ by subtracting a from b.
 
@@ -151,7 +154,7 @@ In 3 dimensions this product would produce a vector, namely the vector perpendic
 Combined, the dot and cross products can be used to rotate points.
 As these two products have many applications. I would suggest that if you want to memorize anything, memorize these two products, as they can be used in many ways.
 
-** Note that unlike for the dot product, the order of the vectors in the cross product matters. If the order of the vectors is switched, the sign is flipped. This is because the order determines which angle between the vectors is chosen, the smaller or the greater angle. **
+**Note that unlike for the dot product, the order of the vectors in the cross product matters. If the order of the vectors is switched, the sign is flipped. This is because the order determines which angle between the vectors is chosen, the smaller or the greater angle.**
 
 ### The length of a vector
 
