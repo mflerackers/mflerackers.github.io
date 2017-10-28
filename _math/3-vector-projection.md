@@ -18,7 +18,7 @@ Imagine for example a cart on a slope. Given a vector made from two points on th
 
 Or think of the situation where a character jumps along an irregular polygon wall. When the collision circle of the character collides with the wall, we can calculate the closest point to the wall by projecting the circle's center onto the wall.
 
-If we want more precise collision detection and response, we can do this as well using vector projection.
+If we want more precise collision detection and response, we can do this as well using vector projection, though we'll need to learn a bit more about lines and polygons before we can get into that.
 
 But before we can project points onto lines or start colliding polygons, we first need to get a basic understanding of how a vector can be projected onto another vector.
 
@@ -81,58 +81,4 @@ function project(x1, y1, x2, y2)
     return mul(dot(x1, y1, x2, y2) / dot(x2, y2, x2, y2), x2, y2)
 end
 {% endhighlight %}
-
-### Projecting a point on a line
-
-Now that we can project a vector onto another vector, it is easy to do things like projecting a point onto a line.
-
-If we have a line AB defined by two points A and B on the line, and C the point we want to project, we build the vector $$\vec{AC}$$, and project it onto the vector $$\vec{AB}$$. From the resulting vector, $$\vec{AC'}$$ we can then make the projected point C' by adding A again.
-
-Basically what happens is that first we translate everything so that A becomes the origin. 
-
-![proj_move](/assets/proj_move.png)
-
-Then we project AC onto AB.
-
-![proj_move_proj](/assets/proj_move_proj.png)
-
-And finally we translate everything back where it was.
-
-![proj_move_proj_move](/assets/proj_move_proj_move.png)
-
-{% highlight lua %}
-function projectPoint(px, py, x1, y1, x2, y2)
-    return add(x1, y1, project(px-x1, py-y1, x2-x1, y2-y1))
-end
-{% endhighlight %}
-
-### Distance of a point to a line
-
-We can now calculate the distance from a point to a line, as the projected point is the point on the line which lies closest to our point.
-
-{% highlight lua %}
-function distancePointLine(px, py, x1, y1, x2, y2)
-    return distance(px, py, projectPoint(px, py, x1, y1, x2, y2))
-end
-{% endhighlight %}
-
-### Distance of a circle to a line
-
-Similarly we can calculate the distance from a circle to a line. We just measure the distance between the circle center and the line, and subtract the radius.
-
-{% highlight lua %}
-function distanceCircleLine(cx, cy, radius, x1, y1, x2, y2)
-    return distancePointLine(cx, cy, x1, y1, x2, y2) - radius
-end
-{% endhighlight %}
-
-While you might be tempted to use this for collision detection, by checking whether the distance is negative, don't forget we're using a square root in our distance calculation, which we don't need. A more optimal way is using the squared distance, and looking whether that is smaller than the square of the radius.
-
-{% highlight lua %}
-function collidesCircleLine(cx, cy, radius, x1, y1, x2, y2)
-    local x, y = projectPoint(cx, cy, x1, y1, x2, y2)
-    return distance2(x, y, cx, cy) < radius * radius
-end
-{% endhighlight %}
-
-Remember, only use distances when you actually need the distance, for comparing distances, use squared distances instead.
+[Previous - Angles](2-angles.html)
