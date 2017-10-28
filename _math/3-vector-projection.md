@@ -16,7 +16,7 @@ Imagine for example a cart on a slope. Given a vector made from two points on th
 
 Or think of the situation where a character jumps along an irregular polygon wall. When the collision circle of the character collides with the wall, we can calculate the closest point to the wall by projecting the circle's center onto the wall.
 
-If we want more precise collision detection and response, we can do this as well using vector projection.
+If we want more precise collision detection and response, we can do this as well using vector projection, though we'll need to learn a bit more about lines and polygons before we can get into that.
 
 But before we can project points onto lines or start colliding polygons, we first need to get a basic understanding of how a vector can be projected onto another vector.
 
@@ -134,3 +134,5 @@ end
 {% endhighlight %}
 
 Remember, only use distances when you actually need the distance, for comparing distances, use squared distances instead.
+
+[Previous - Angles](2-angles.html)
