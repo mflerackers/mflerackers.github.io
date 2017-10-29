@@ -24,7 +24,7 @@ For every scalar s the point p will be a point on our line.
 
 ### Line intersection
 
-Given the lines 
+Given the lines through a, b and c, d.
 
 If these lines intersect, then there is a point p for which there is both a scalar t and a scalar s for which the following equations are equal to p.
 
@@ -44,7 +44,7 @@ The point $$c$$ subtracted from $$a$$ gives us the vector $$\vec{ca}$$
 
 $$\vec{ca}+s*\vec{ab}=t*\vec{cd}$$
 
-Now we are going to use the cross product with $$\vec{ab}$$ to get rid of this term, as $$\vec{ab}\times\vec{ab}$$ is 0.
+Now we are going to use the cross product with $$\vec{ab}$$ to get rid of the term $$s*\vec{ab}$$, as $$\vec{ab}\times\vec{ab}$$ is 0.
 
 $$\vec{ca}\times\vec{ab}+s*\vec{ab}\times\vec{ab}=t*\vec{cd}\times\vec{ab}$$
 

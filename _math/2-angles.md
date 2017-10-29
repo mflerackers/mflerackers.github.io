@@ -12,7 +12,7 @@ math: true
 ## Angles
 While the direction of a vector is useful in many ways, we can't tell much from the directions of two vectors, not like we could from their lengths. Nor can we simply linearly interpolate between two directions. For this we need a conversion to something we are more accustomed too, namely angles. Instead of degrees, we are going to use radians. While degrees are handy for display or editing values, converting from and to degrees would waste a lot of unnecessary CPU cycles. Degrees go from 0 to 360, radians from 0 to $$2\pi$$.
 
-{% highlight lua %}
+~~~ lua
 function deg2rad(d)
     return d*math.pi/180
 end
@@ -20,7 +20,7 @@ end
 function rad2deg(r)
     return r * 180 / math.pi
 end
-{% endhighlight %}
+~~~
 
 The number $$\pi$$ used in trigonometric functions is not an arbitrarily chosen value. When we work with normalized vectors, vectors with a length of 1, their destination lies on a circle with a radius of 1. If you measure the circumference of that circle, you arrive at exactly $$2\pi$$ or 6.28318530718. You might remember that if you need the circumference of a circle with radius r, that you need to calculate $$2\pi r$$. The $$r$$ in this case is nothing but a scale factor by which you scale the unit circle which has a radius of 1 and a circumference of $$2\pi$$.
 
@@ -38,11 +38,11 @@ Lets look at some vectors and the angles they represent.
 
 Unfortunately, there is no easy way to go from an angle to a direction and back. We need trigonometric functions to do this, which are rather slow compared to normal operations. To go from an angle to a direction vector, we use cosine and sine. These give the x and y of the normalized vector representing the direction.
 
-{% highlight lua %}
+~~~ lua
 function vectorFromAngle(a)
     return math.cos(a), math.sin(a)
 end
-{% endhighlight %}
+~~~
 
 ### Vector to angle
 To get the angle represented by a given normalized vector, we might be tempted to use the reverse calculation, namely arc cosine or arc sine. However if we use $$acos(x)$$, we get an angle between $$0$$ and $$\pi$$ radians. This is because without using y, we don't know whether the vector is pointing up or down, it only tells us left or right. Similarly, $$asin(y)$$ gives us an angle between $$-\frac{\pi}{2}$$ and $$\frac{\pi}{2}$$ radians as it can't tell whether the vector is pointing right or left.
@@ -58,11 +58,11 @@ If we would use the tan function, we would get the same problem as before, as wi
 
 $$\theta=atan2(sin(\theta), cos(\theta))=atan2(y, x)$$
 
-{% highlight lua %}
+~~~ lua
 function angleFromVector(x, y)
     return math.atan2(y, x)
 end
-{% endhighlight %}
+~~~
 
 ### Angle between 2 vectors
 We could convert both vectors separately to angles and subtract these, but we would be doing more work than is needed. If only we could obtain the sine and cosine of the angle, we could, like before, use the arc tangent to get the angle. This is where the dot and cross products come in handy, as they have the following properties
@@ -82,11 +82,11 @@ This means we can use the cross and dot products of the two vectors together wit
 
 $$\theta=atan2(\vec{a}\times\vec{b}, \vec{a}.\vec{b})$$
 
-{% highlight lua %}
+~~~ lua
 function angleBetweenVectors(x1, y1, x2, y2)
     return math.atan2(cross(x1, y1, x2, y2), dot(x1, y1, x2, y2))
 end
-{% endhighlight %}
+~~~
 
 Note that we can now explain why the length formula is the square root of the dot product. The angle between a vector and itself is 0 so we get
 
@@ -112,7 +112,7 @@ $$cos(\theta)=\frac{\vec{a}.\vec{b}}{\left|\vec{a}\right|\left|\vec{b}\right|}$$
 But since we are only interested in the sign, we can disregard the lengths. So if $$\vec{a}.\vec{b} > 0$$ we know that the vectors point in the same direction.
 An application of this would be for example to draw or attack enemy units only if they are in front of us.
 
-{% highlight lua %}
+~~~ lua
 function drawEnemy(x, y)
     local toEnemyX, toEnemyY = sub(x, y, ox, oy)
     local cosine = dot(toEnemyY, playerDir)
@@ -122,7 +122,7 @@ function drawEnemy(x, y)
         // nothing to do, enemy is behind our back
     end
 end
-{% endhighlight %}
+~~~
 
 ## Rotation
 
@@ -182,7 +182,7 @@ $$y'=(x-c_x)*sin(\alpha)+(y-c_y)*cos(\alpha) + cy$$
 
 Of course unless this rotation anchor is animated, it is better to offset the geometry once in order to save on calculations. For example instead of drawing a sprite as {0, 0, w, h}, it is better drawn as {-w*0.5, -h*0.5, w*0.5, h*0.5} if the anchor is always in the center of the sprite. The same goes for scaling. If a sprite has a fixed scale, incorporate it into the geometry, like {0, 0, w*2, h*2}.
 
-{% highlight lua %}
+~~~ lua
 function rotate(x, y, angle, cx, cy)
     cx = cx or 0
     cy = cy or 0
@@ -192,7 +192,7 @@ function rotate(x, y, angle, cx, cy)
     y = y - cy
     return x*c - y*s + cx, x*s + y*c + cy
 end
-{% endhighlight %}
+~~~
 
 ### Rotation using a normalized vector
 
@@ -214,7 +214,7 @@ $$y'=x*v_y+y*v_x$$
 
 This insight has several implications. If we want to rotate for example a sprite given a direction, we don't need to calculate an angle from the direction, to convert it again to a vector to do the rotation. We can just use the normalized vector directly. If we apply the rotation of a static object every frame, we might want to store this vector rather than the angle, since we can use it directly without the need of trigonometric functions.
 
-{% highlight lua %}
+~~~ lua
 function followTarget(x, y, tx, ty, points)
     -- Build direction vector
     local vx, vy = tx-x, ty-y
@@ -228,11 +228,11 @@ function followTarget(x, y, tx, ty, points)
         point.x, point.y = point.x*c - point.y*s, point.x*s + point.y*c
     end
 end
-{% endhighlight %}
+~~~
 
 compare this with
 
-{% highlight lua %}
+~~~ lua
 function followTarget(x, y, tx, ty, points)
     -- Build direction vector
     local vx, vy = normalize(tx-x, ty-y)
@@ -241,7 +241,7 @@ function followTarget(x, y, tx, ty, points)
         point.x, point.y = point.x*vx - point.y*vy, point.x*vy + point.y*vx
     end
 end
-{% endhighlight %}
+~~~
 
 | : ---- : |
 | [Previous - Points and Vectors](1-points-and-vectors.html) | [Next - Vector projection](3-vector-projection.html) |

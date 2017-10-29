@@ -24,7 +24,7 @@ For example, most mobile games need to scale from world space to screen space. Y
 
 Note that we are not scaling pixels, but rather the corners of sprites or the points of a polygon. Once these positions are transformed, we can render the actual world to pixels. Also note that we can not really talk about scaling an individual point, because what scales is their position relative to each other.
 
-### Scaling from the origin
+## Scaling from the origin
 
 While we can't translate yet, we can do a uniform scale in order to do some zoom operations. To transform a point with a uniform scale factor s, a scalar, we simply multiply both $$x$$ and $$y$$ with s.
 
@@ -32,13 +32,13 @@ $$
 (x',y') = s(x, y)=(s*x, s*y)
 $$
 
-{% highlight lua %}
+~~~ lua
 
 function mul(s, x, y)
 ​    return x * s, y *s
 end
 
-{% endhighlight %}
+~~~
 
 To determine the scale in case of matching the world with a device screen, we simply use min(screen_width/world_width, screen_height/world_height). This gives us a scale which makes both width and height fit inside the screen, preserving the aspect ratio.
 
@@ -55,17 +55,26 @@ If the scale is larger than 1, all other points drift away from from the origin.
 ## Vectors
 
 When we subtract two points, we get a vector. Vectors are also defined as a pair $$\langle x, y\rangle$$, however the x and y are no longer a position, but rather define a direction and distance from the origin. A vector $$\langle x, y\rangle$$ can be thought of as an arrow starting from $$(0, 0)$$ towards $$(x, y)$$. The further a vector is from the origin, the greater its magnitude.
-If we have two points a and b, we can build the vector $\vec{ab}$ by subtracting a from b.
+If we have two points a and b, we can build the vector $$\vec{ab}$$ by subtracting a from b.
 
 $$\vec{ab}=b-a$$
 
-{% highlight lua %}
+~~~ lua
 function sub(x1, y1, x2, y2)
     return x1 - x2, y1 - y2
 end
-{% endhighlight %}
+~~~
 
 **The point at the arrow of the vector should always come first.**
+
+If you have trouble remembering this, it might be a good idea to make a function to build a vector.
+
+~~~ lua
+function vector(x1, y1, x2, y2)
+    return x2 - x1, y2 - y1
+end
+~~~
+
 Notice that calculating the vector from for example $$(0, 0)$$ to $$(1, 4)$$ or from $$(4, 5)$$ to $$(5, 9)$$ both give the vector $$\langle 1, 4\rangle$$. Because to move from any of the two origins towards their destination you need to move in the same direction, crossing the same distance.
 
 Adding the vector to its origin gives us the destination.
@@ -76,13 +85,13 @@ This is quite logical
 
 $$a + \vec{ab} = a + (b - a)=a + b - a=b$$
 
-A vector can move or translate a point by a given distance in a given direction.
+A vector can move or translate a point by a given distance in a given direction simply by adding it to the point.
 
-{% highlight lua %}
+~~~ lua
 function add(x1, y1, x2, y2)
     return x1 + x2, y1 + y2
 end
-{% endhighlight %}
+~~~
 
 Since a point and a vector are so similar, should we really distinguish them? Especially since any point can also be seen as a vector starting from the origin
 
@@ -108,7 +117,7 @@ Now that we can translate, we can devise a method to scale from any given point,
 
 $$(x',y')=(x, y) - \langle c_x, c_y\rangle$$
 
-If we scale now, the point $$(c_x, c_y)$$ will be the center of our scale. It will not be affected, and all points will drift away from or towards it
+If we scale now, the point $$(c_x, c_y)$$ will be the center of our scale. $$(c_x, c_y)$$ will not be affected by the scale, and all other points will drift away from or towards it
 
 $$(x',y')=s((x, y) - \langle c_x, c_y\rangle)$$
 
@@ -116,13 +125,13 @@ However, everything will also be translated, which is not what we wanted, so we 
 
 $$(x',y')=s((x, y) - \langle c_x, c_y\rangle) + \langle c_x, c_y\rangle$$
 
-{% highlight lua %}
+~~~ lua
 function scale(x, y, s, cx, cy)
     cx = cx or 0
     cy = cy or 0
     return s*(x-cx)+cx, s*(y-cy)+cy
 end
-{% endhighlight %}
+~~~
 
 Besides adding or subtracting vectors, or doing scalar multiplication or division, we can also take the product of two vectors. There are two different kinds of products.
 
@@ -132,11 +141,11 @@ The dot product is defined as the scalar obtained by
 
 $$\langle x_1,y_1\rangle.\langle x_2,y_2\rangle=x_1*x_2+y_1*y_2$$
 
-{% highlight lua %}
+~~~ lua
 function dot(x1, y1, x2, y2)
     return x1*x2+y1*y2
 end
-{% endhighlight %}
+~~~
 
 The dot product can be used to calculate the length (magnitude or norm) of a vector. But it can also give you the cosine of the angle between two vectors or project one vector onto another one.
 ### The cross product
@@ -144,11 +153,11 @@ The cross product if defined as
 
 $$\langle x_1,y_1\rangle\times\langle x_2,y_2\rangle=x_1*y_2-y_1*x_2$$
 
-{% highlight lua %}
+~~~ lua
 function cross(x1, y1, x2, y2)
     return x1*y2-y1*x2
 end
-{% endhighlight %}
+~~~
 
 In 3 dimensions this product would produce a vector, namely the vector perpendicular to the plane defined by the two vectors. In 2D however, we get a scalar, as there is no third dimension. The cross product can give you the sine of the angle between two vectors.
 Combined, the dot and cross products can be used to rotate points.
@@ -166,20 +175,20 @@ When we need the actual length, we need to take the square root
 
 $$\left|\langle x, y\rangle\right| = \sqrt{\langle x,x\rangle.\langle x,y\rangle}=\sqrt{x*x+y*y}$$
 
-{% highlight lua %}
+~~~ lua
 function length(x, y)
     return math.sqrt(x*x+y*y)
 end
-{% endhighlight %}
+~~~
 
 Being able to obtain the length of a vector allows us to calculate the distance between two points. Given the points a and b, we can create the vector $$\vec{ab}$$ and take it's length. It gives us the distance to travel from a to b.
 
-{% highlight lua %}
+~~~ lua
 function distance(x1, y1, x2, y2)
     local dx, dy = x1-x2, y1-y2
     return math.sqrt(dx*dx+dy*dy)
 end
-{% endhighlight %}
+~~~
 
 **Note that when comparing magnitudes, you can often do with the length squared, which saves you a square root calculation.**
 
@@ -201,12 +210,12 @@ $$a\leq b*b$$
 
 A useful application of this is testing whether a point is inside a circle. To know the answer, we need to compare the distance between the point and the center of the circle with the radius of the circle. However instead of using a square root, we can compare the distance squared with the radius squared
 
-{% highlight lua %}
+~~~ lua
 function inCircle(x, y, cx, cy, r)
     local dx, dy = x-cx, y-cy
     return dx*dx+dy*dy <= r*r
 end
-{% endhighlight %}
+~~~
 
 Being able to determine the length of a vector, we can see now that for example $$\langle 2, 0\rangle$$ and $$\langle 0, 2\rangle$$ have the same length. We are now able to compare the magnitudes of vectors while disregarding their direction.
 
@@ -217,28 +226,28 @@ While previously we disregarded direction in order to compare lengths, we will n
 
 $$\frac{\langle x, y\rangle}{\left|\langle x, y\rangle\right|}$$
 
-{% highlight lua %}
+~~~ lua
 function normalize(x, y)
     local l = math.sqrt(x*x+y*y)
     return x/l, y/l
 end
-{% endhighlight %}
+~~~
 
 Normalized vectors have always 1 as length, since their original length has been erased. We can now see that $$\langle 1, 3\rangle$$ an $$\langle 2, 6\rangle$$ point in the same direction, as normalization gives for both $$\langle 0.31622776601, 0.94868329805\rangle$$, while $$\langle -1, -3\rangle$$ points in the opposite direction $$\langle -0.31622776601, -0.94868329805\rangle$$.
 
 ### Vector negation
 Negating or multiplying a vector by -1 gives the vector pointing in the opposite direction.
 
-{% highlight lua %}
+~~~ lua
 function negate(x, y)
     return -x, -y
 end
-{% endhighlight %}
+~~~
 
 ### Clockwise and counterclockwise perpendicular vector
 Sometimes we need the vector perpendicular to a certain vector. There are two possibilities, one in the clockwise direction, and one in the counterclockwise direction.
 
-{% highlight lua %}
+~~~ lua
 function ccw(x, y)
     return -y, x
 end
@@ -246,7 +255,7 @@ end
 function cw(x, y)
     return y, -x
 end
-{% endhighlight %}
+~~~
 
 ### A note on notation
 
