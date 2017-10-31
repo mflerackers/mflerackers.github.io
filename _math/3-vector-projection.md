@@ -4,7 +4,9 @@ title: Vector projection
 math: true
 ---
 
-[Previous - Angles](2-angles.html)
+| : ---- : |
+| [Previous - Angles](2-angles.html) | [Next - Matrices](4-matrices.html) |
+
 
 # [Math for game development](../) : Vector projection
 
@@ -135,4 +137,5 @@ end
 
 Remember, only use distances when you actually need the distance, for comparing distances, use squared distances instead.
 
-[Previous - Angles](2-angles.html)
+| : ---- : |
+| [Previous - Angles](2-angles.html) | [Next - Matrices](4-matrices.html) |
