@@ -2,7 +2,7 @@ theme: jekyll-theme-minimal
 title: fromatogra
 description: Software and mathematics
 markdown: kramdown
-google_analytics: UA-109679259-1
+google_analytics: UA-109740765-1
 collections:
   math:
     output: true
