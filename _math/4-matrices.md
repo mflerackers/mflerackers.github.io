@@ -5,7 +5,7 @@ math: true
 ---
 
 | : ---- : |
-| [Previous - Vector projection](3-vector-projection.html) | [Next - Lines](5-lines.html) |
+| [Previous - Vector projection](3-vector-projection.html) | [Next - Lines] |
 
 # [Math for game development](../) : Transformations as matrices
 
@@ -370,7 +370,7 @@ end
 
 ## Inverse matrix
 
-The inverse matrix $$M^{-1}$$ is the matrix $$M'$$ for which if $$x'=M \times x$$ than $$x=M' \times x'$$. This matrix is very handy when creating editors for a game, or interaction, as the mouse or finger input needs the inverse camera transform. We'll start with the inverse of the basic transformations. The inverse of the identity matrix is of course the identity matrix again.
+The inverse matrix $$M^{-1}$$ is the matrix $$M'$$ for which if $$x'=M \times x$$ then $$x=M' \times x'$$. This matrix is very handy when creating editors for a game, or interaction, as the mouse or finger input needs the inverse camera transform. We'll start with the inverse of the basic transformations. The inverse of the identity matrix is of course the identity matrix again.
 
 ### The inverse translation matrix
 
@@ -538,7 +538,7 @@ $$x^2*cos(\alpha)^2+x^2*sin(\alpha)^2=$$
 
 Extracting the common factor we get
 
-$$x^2*(cos(\alpha)^2+x*sin(\alpha)^2)=x^2*1$$
+$$x^2*(cos(\alpha)^2+sin(\alpha)^2)=x^2*1$$
 
 So if we take the square root of the above formula we get
 

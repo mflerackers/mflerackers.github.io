@@ -18,6 +18,6 @@ I hope that for people reading this as a book, or using it as a reference, the e
 
 Ultimately I hope that reading this instills the need to learn more in some of you. The urge to understand mathematics instead of using it as a black box in order to build new methods and experiences on top of that knowledge.
 
-The code provided within the book as examples is written in lua. This is because lua is both very clear in syntax as well as an easy language to learn. The example code is written in a functional rather than an object oriented style in order to prioritize the mathematics. In some cases, where objects with overloaded operators make the code more clear, an object oriented style is adopted.
+The code provided within the book as examples is written in lua. This is because lua is both very clear in syntax as well as an easy language to learn. The example code is written using functions rather than in an object oriented style in order to prioritize the mathematics. Moreover it is written in a functional style where output only depends on input and no internal or external state is being mutated. In some cases, where objects with overloaded operators make the code more clear, an object oriented style is adopted, however the style is kept functional, thus the objects are immutable in as far as is practical in lua.
 
 This is still an early draft, and will be revised when I find mistakes, places which are unclear or where additional information is needed.
