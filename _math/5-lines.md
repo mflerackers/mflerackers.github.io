@@ -330,12 +330,14 @@ Similarly, $$\vec{ac}\times\vec{cd}$$ becomes $$ac_y$$. So we can write a specif
 function intersectLineSegmentHorizontalLine(ax, ay, bx, by, y)
     local abx, aby = bx - ax, by - ay           -- ab
                                                 -- cd is (-1,0)
-    local s = aby                               -- ab x cd
-    if s < 0.00001 and s > -0.00001 then
-        -- Collinear if ac x cd == 0, parallel otherwise
+                                                -- ab x cd is aby
+    if aby < 0.00001 and aby > -0.00001 then
+        -- Collinear if ac x cd == 0, acy in this case
+        -- parallel otherwise
         return nil
     end
-    s = acy / s                                 -- ac x cd / ab x cd
+    local acy = ay - y
+    local s = acy / aby                         -- ac x cd / ab x cd
     if s < 0 or s > 1 then
         return nil
     end
@@ -343,7 +345,7 @@ function intersectLineSegmentHorizontalLine(ax, ay, bx, by, y)
 end
 ```
 
-#### Vertical lines
+### Vertical lines
 
 For vertical lines we can choose our vector as $$\langle 0,1\rangle$$ which gives us a similar solution.
 
@@ -351,12 +353,14 @@ For vertical lines we can choose our vector as $$\langle 0,1\rangle$$ which give
 function intersectLineSegmentVerticalLine(ax, ay, bx, by, x)
     local abx, aby = bx - ax, by - ay           -- ab
                                                 -- cd is (0,1)
-    local s = abx                               -- ab x cd
-    if s < 0.00001 and s > -0.00001 then
-        -- Collinear if ac x cd == 0, parallel otherwise
+                                                -- ab x cd is abx
+    if abx < 0.00001 and abx > -0.00001 then
+        -- Collinear if ac x cd == 0, acx in this case
+        -- parallel otherwise
         return nil
     end
-    s = acx / s                                 -- ac x cd / ab x cd
+    local acx = ax - x
+    local s = acx / abx                          -- ac x cd / ab x cd
     if s < 0 or s > 1 then
         return nil
     end
@@ -364,4 +368,4 @@ function intersectLineSegmentVerticalLine(ax, ay, bx, by, x)
 end
 ```
 
-#### 
+While this can be useful to test against screen borders, in real situations it is more useful if we can test against line segments, like those of walls or boxes. however we can't just use (-1,0) and (0,1) as direction vectors in this case, can we? As this will make t a number between 0 and 1 divided by the length of the segment, not between 0 and 1. Which means we would need to know the length of the segment to test whether we intersect with it.
