@@ -332,18 +332,57 @@ function intersectLineSegmentHorizontalLine(ax, ay, bx, by, y)
                                                 -- cd is (-1,0)
                                                 -- ab x cd is aby
     if aby < 0.00001 and aby > -0.00001 then
-        -- Collinear if ac x cd == 0, acy in this case
+        -- Collinear if ac x cd == 0, y-ay in this case
         -- parallel otherwise
         return nil
     end
-    local acy = ay - y
-    local s = acy / aby                         -- ac x cd / ab x cd
+    local s = (y-ay) / aby                      -- ac x cd / ab x cd
     if s < 0 or s > 1 then
         return nil
     end
     return ax + s * abx, ay + s * aby           -- a + s * ab
 end
 ```
+
+Can we simplify this? What does $$s<0$$ and $$s>0$$ mean in this case? well, let's find out. The inequality
+$$
+\frac{y-a_y}{b_y-a_y}<0
+$$
+has two solutions, depending whether $$b_y-a_y$$ is positive or negative.
+
+If $$b_y-a_y$$ is positive, thus $$b_y>=a_y$$, multiplying both sides with $$b_y-a_y$$ keeps the inequality as $<$, thus
+$$
+y-a_y < 0
+$$
+or
+$$
+y < a_y
+$$
+If $$b_y-a_y$$ is negative, thus $$b_y<a_y$$, we need to flip the inequality when multiplying, so we get
+$$
+y-a_y > 0
+$$
+or
+$$
+y>a_y
+$$
+For the other inequality
+$$
+\frac{y-a_y}{b_y-a_y}>1
+$$
+we can do the same. If $$b_y-a_y$$ is positive, thus $$b_y>=a_y$$, we get
+$$
+y-a_y>b_y-a_y
+$$
+Or, if we add $$a_y$$ on both sides
+$$
+y>b_y
+$$
+Similarly when $$b_y-a_y$$ is negative, thus $$b_y<a_y$$ we get
+$$
+y<b_y
+$$
+
 
 ### Vertical lines
 
@@ -355,12 +394,11 @@ function intersectLineSegmentVerticalLine(ax, ay, bx, by, x)
                                                 -- cd is (0,1)
                                                 -- ab x cd is abx
     if abx < 0.00001 and abx > -0.00001 then
-        -- Collinear if ac x cd == 0, acx in this case
+        -- Collinear if ac x cd == 0, x-ax in this case
         -- parallel otherwise
         return nil
-    end
-    local acx = ax - x
-    local s = acx / abx                          -- ac x cd / ab x cd
+    end    
+    local s = (x-ax) / abx                      -- ac x cd / ab x cd
     if s < 0 or s > 1 then
         return nil
     end
