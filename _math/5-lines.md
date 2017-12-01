@@ -394,12 +394,36 @@ Thus we don't have an intersection if the segment lies entirely above or under t
 
 If the test, whichever we choose, indicates an intersection, we can calculate the intersection point, which was
 $$
-x=a_x+s*(b_x-a_x)\\y=a_y+s*(b_y-a_y)
+i_x=a_x+s*(b_x-a_x)\\i_y=a_y+s*(b_y-a_y)
 $$
 if we fill in s we get
 $$
-x=a_x+\frac{y-a_y}{b_y-a_y}*(b_x-a_x)\\y=a_y+\frac{y-a_y}{b_y-a_y}*(b_y-a_y)
+i_x=a_x+\frac{y-a_y}{b_y-a_y}*(b_x-a_x)\\i_y=a_y+\frac{y-a_y}{b_y-a_y}*(b_y-a_y)
 $$
+For $$i_y$$ we can remove the division by $$b_y-a_y$$ since we multiply by $$b_y-a_y$$ as well. Then we can erase $$a_y$$ as well as it is negated by $$-a_y$$. So $$i_y=y$$ as we would expect of an intersection with an horizontal line at y.
+
+For $$i_x$$ we see that we actually compute the slope of the line as $$\frac{dx}{dy}$$ which we then multiply with the distance of $$a_y$$ to the line, thus getting the distance of $$a_x$$ to the line. Adding up $$a_x$$ and its distance to the line gives us the intersection coordinate $$i_x$$.
+
+So finally we can write our simplified function as
+
+```lua
+function intersectLineSegmentHorizontalLine(ax, ay, bx, by, y)
+    local abx, aby = bx - ax, by - ay           -- ab
+                                                -- cd is (-1,0)
+                                                -- ab x cd is aby
+    if aby < 0.00001 and aby > -0.00001 then
+        -- Collinear if ac x cd == 0, y-ay in this case
+        -- parallel otherwise
+        return nil
+    end
+    local s = (y-ay) / aby                      -- ac x cd / ab x cd
+    if s < 0 or s > 1 then
+        return nil
+    end
+    return ax + s * abx, y                      -- a + s * ab
+end
+```
+
 
 
 ### Vertical lines
