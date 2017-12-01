@@ -350,7 +350,7 @@ $$
 $$
 has two solutions, depending whether $$b_y-a_y$$ is positive or negative.
 
-If $$b_y-a_y$$ is positive, thus $$b_y>=a_y$$, multiplying both sides with $$b_y-a_y$$ keeps the inequality as $<$, thus
+If $$b_y-a_y$$ is positive, thus $$b_y>a_y$$, multiplying both sides with $$b_y-a_y$$ keeps the inequality as $<$, thus
 $$
 y-a_y < 0
 $$
@@ -370,7 +370,7 @@ For the other inequality
 $$
 \frac{y-a_y}{b_y-a_y}>1
 $$
-we can do the same. If $$b_y-a_y$$ is positive, thus $$b_y>=a_y$$, we get
+we can do the same. If $$b_y-a_y$$ is positive, thus $$b_y>a_y$$, we get
 $$
 y-a_y>b_y-a_y
 $$
@@ -381,6 +381,24 @@ $$
 Similarly when $$b_y-a_y$$ is negative, thus $$b_y<a_y$$ we get
 $$
 y<b_y
+$$
+So to summarize, we have that if $$b_y>a_y$$, we don't have an intersection if $$y < a_y$$ or $$y>b_y$$. When $$b_y<a_y$$, we don't have an intersection if $$y>a_y$$ or $$y<b_y$$. In code this would be expressed as for example
+
+~~~ Lua
+if y < min(ay,by) or y > max(ay,by) then
+  return nil
+end
+~~~
+
+Thus we don't have an intersection if the segment lies entirely above or under the horizontal line at y. Whether you use s < 0 or s > 1 or this min-max test won't make a difference, but since you already need to calculate s to get the intersection, testing s with 0 and 1 will be faster than doing 2 extra comparisons (and 2 extra function calls in languages without inlined code). But I hope this analysis shows what exactly is being tested.
+
+If the test, whichever we choose, indicates an intersection, we can calculate the intersection point, which was
+$$
+x=a_x+s*(b_x-a_x)\\y=a_y+s*(b_y-a_y)
+$$
+if we fill in s we get
+$$
+x=a_x+\frac{y-a_y}{b_y-a_y}*(b_x-a_x)\\y=a_y+\frac{y-a_y}{b_y-a_y}*(b_y-a_y)
 $$
 
 
