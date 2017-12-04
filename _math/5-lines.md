@@ -390,7 +390,7 @@ if y < min(ay,by) or y > max(ay,by) then
 end
 ~~~
 
-Thus we don't have an intersection if the segment lies entirely above or under the horizontal line at y. Whether you use s < 0 or s > 1 or this min-max test won't make a difference, but since you already need to calculate s to get the intersection, testing s with 0 and 1 will be faster than doing 2 extra comparisons (and 2 extra function calls in languages without inlined code). But I hope this analysis shows what exactly is being tested.
+Thus we don't have an intersection if the segment lies entirely above or under the horizontal line at y. Whether you use s < 0 or s > 1 or this min-max test won't make a difference, but since you already need to calculate s to get the intersection, testing s with 0 and 1 will be faster than doing 2 extra comparisons (and potential function calls). But I hope this analysis shows what exactly is being tested.
 
 If the test, whichever we choose, indicates an intersection, we can calculate the intersection point, which was
 $$
@@ -424,8 +424,6 @@ function intersectLineSegmentHorizontalLine(ax, ay, bx, by, y)
 end
 ```
 
-
-
 ### Vertical lines
 
 For vertical lines we can choose our vector as $$\langle 0,1\rangle$$ which gives us a similar solution.
@@ -444,8 +442,31 @@ function intersectLineSegmentVerticalLine(ax, ay, bx, by, x)
     if s < 0 or s > 1 then
         return nil
     end
-    return ax + s * abx, ay + s * aby           -- a + s * ab
+    return ax, ay + s * aby                     -- a + s * ab
 end
 ```
 
-While this can be useful to test against screen borders, in real situations it is more useful if we can test against line segments, like those of walls or boxes. however we can't just use (-1,0) and (0,1) as direction vectors in this case, can we? As this will make t a number between 0 and 1 divided by the length of the segment, not between 0 and 1. Which means we would need to know the length of the segment to test whether we intersect with it.
+## horizontal line segments
+
+While lines can be useful to test against screen borders, in real situations it is more useful if we can test against line segments, like those of walls or boxes. However we can't just use (-1,0) and (0,1) as direction vectors in this case, can we? As this will make t a number between 0 and 1 divided by the length of the segment, not between 0 and 1. Which means we would need to know the length of the segment to test whether we intersect with it. This is not really a problem as the absolute value of the difference between the two x values gives us the length without needing to calculate the square root of the dot product, since it is a horizontal line segment.
+
+```lua
+function intersectLineSegmentHorizontalLineSegment(ax, ay, bx, by, x1, x2, y)
+    local abx, aby = bx - ax, by - ay           -- ab
+                                                -- cd is (-1,0)
+                                                -- ab x cd is aby
+    if aby < 0.00001 and aby > -0.00001 then
+        -- Collinear if ac x cd == 0, y-ay in this case
+        -- parallel otherwise
+        return nil
+    end
+    local s = (y-ay) / aby                      -- ac x cd / ab x cd
+    local l = abs(x1-x2)
+    if s < 0 or s*l > 1 then
+        return nil
+    end
+    return ax + s * abx, y                      -- a + s * ab
+end
+```
+
+### 
