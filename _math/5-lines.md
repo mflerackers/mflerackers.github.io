@@ -157,7 +157,7 @@ We can see that if s is 0, p is equal to a, while if s is 1, p is equal to b. An
 Given what we know from line intersection, intersecting a line or line segment with another line is not so hard. We only need to be sure that the intersection point is actually within the segment(s). This is simple if we have s for the point on the segment. If s is outside the interval [0,1], the point is outside the range of the segment.
 
 ~~~ Lua
-function intersectLineSegmentLine(ax, ay, bx, by, cx, cy, dx, dy)
+function intersectSegmentLine(ax, ay, bx, by, cx, cy, dx, dy)
     local abx, aby = bx - ax, by - ay           -- ab
     local cdx, cdy = dx - cx, dy - cy           -- cd
     local s = cross(abx, aby, cdx, cdy)         -- ab x cd
@@ -208,7 +208,7 @@ $$
 Using this we can efficiently write the checks to see if our point lies within the other segment as well.
 
 ```Lua
-function intersectLineSegments(ax, ay, bx, by, cx, cy, dx, dy)
+function intersectSegments(ax, ay, bx, by, cx, cy, dx, dy)
     local abx, aby = bx - ax, by - ay           -- ab
     local cdx, cdy = dx - cx, dy - cy           -- cd
     local abxcd = cross(abx, aby, cdx, cdy)     -- ab x cd
@@ -238,7 +238,7 @@ If the point is on the line, we need to test whether it lies between the segment
 To be sure that the point doesn't lie past the end of the segment, we can look whether the dot product of $$\vec{ac}$$ with itself is smaller than the dot product of $$\vec{ab}$$ with itself, as the dot product gives us the length squared.
 
 ~~~ Lua
-function pointOnLineSegment(ax, ay, bx, by, cx, cy)
+function pointOnSegment(ax, ay, bx, by, cx, cy)
     local abx, aby = bx - ax, by - ay        -- ab
     local acx, acy = cx - ax, cy - ay        -- ac
     local t = cross(abx, aby, acx, acy)      -- ab x ac
@@ -327,7 +327,7 @@ Remember that the cross product is defined as $$a_x*b_y-a_y*b_x$$. For a horizon
 Similarly, $$\vec{ac}\times\vec{cd}$$ becomes $$ac_y$$. So we can write a specific function for horizontal lines as follows.
 
 ```lua
-function intersectLineSegmentHorizontalLine(ax, ay, bx, by, y)
+function intersectSegmentHorizontalLine(ax, ay, bx, by, y)
     local abx, aby = bx - ax, by - ay           -- ab
                                                 -- cd is (-1,0)
                                                 -- ab x cd is aby
@@ -407,7 +407,7 @@ For $$i_x$$ we see that we actually compute the slope of the line as $$\frac{dx}
 So finally we can write our simplified function as
 
 ```lua
-function intersectLineSegmentHorizontalLine(ax, ay, bx, by, y)
+function intersectSegmentHorizontalLine(ax, ay, bx, by, y)
     local abx, aby = bx - ax, by - ay           -- ab
                                                 -- cd is (-1,0)
                                                 -- ab x cd is aby
@@ -429,7 +429,7 @@ end
 For vertical lines we can choose our vector as $$\langle 0,1\rangle$$ which gives us a similar solution.
 
 ```lua
-function intersectLineSegmentVerticalLine(ax, ay, bx, by, x)
+function intersectSegmentVerticalLine(ax, ay, bx, by, x)
     local abx, aby = bx - ax, by - ay           -- ab
                                                 -- cd is (0,1)
                                                 -- ab x cd is abx
@@ -448,25 +448,64 @@ end
 
 ## horizontal line segments
 
-While lines can be useful to test against screen borders, in real situations it is more useful if we can test against line segments, like those of walls or boxes. However we can't just use (-1,0) and (0,1) as direction vectors in this case, can we? As this will make t a number between 0 and 1 divided by the length of the segment, not between 0 and 1. Which means we would need to know the length of the segment to test whether we intersect with it. This is not really a problem as the absolute value of the difference between the two x values gives us the length without needing to calculate the square root of the dot product, since it is a horizontal line segment.
+While lines can be useful to test against screen borders, in real situations it is more useful if we can test against line segments, like those of walls or boxes. We can do this like we did for lines, but in this case we need to pay more attention to the fact that our direction vector (-1, 0) doesn't match our actual line segment length of $$l=|x1-x2|$$.
+
+What actually happens when the direction vector of the horizontal segment has length 1 instead of the actual length $$l$$? Since the cross product is a product, and one of the factors is $$l$$ times smaller, the product itself will be $$l$$ times smaller. Thus every cross product involving $$cd$$, which has been replaced with (-1,0) will be $$|cd|$$ times smaller.
+
+For $$s$$ this gives no change, as for $$s$$ $$cd$$ features in both the numerator and denominator and it cancels itself out.
+
+For $$t$$ however, $$cd$$ is only present in the denominator. Since the denominator is $$|cd|$$ times smaller than it should be, $$t$$ will be $$|cd|$$ times greater than we expect it to be. Thus we need to adapt our test of $$t>1$$ to $$t>|cd|$$.
+
+To get the length of $$cd$$ we could subtract d from c and take the absolute value. However we need to know which of c or d is greater than the other because we decided to use the vector (-1,0) as approximation of $$cd$$ and thus the direction of $$cd$$ needs to match this. This is important when calculating $$ac$$. Once we know which is greater, an absolute value is no longer needed.
 
 ```lua
-function intersectLineSegmentHorizontalLineSegment(ax, ay, bx, by, x1, x2, y)
-    local abx, aby = bx - ax, by - ay           -- ab
-                                                -- cd is (-1,0)
-                                                -- ab x cd is aby
+function intersectSegmentHorizontalSegment(ax, ay, bx, by, x1, x2, y)
+    local abx, aby = bx - ax, by - ay            -- ab
+                                                 -- cd is (-1,0)
+                                                 -- ab x cd is aby
     if aby < 0.00001 and aby > -0.00001 then
-        -- Collinear if ac x cd == 0, y-ay in this case
+        -- Collinear if ac x cd == 0, y-ay == 0 in this case
         -- parallel otherwise
         return nil
     end
-    local s = (y-ay) / aby                      -- ac x cd / ab x cd
-    local l = abs(x1-x2)
-    if s < 0 or s*l > 1 then
+    local s = (y - ay) / aby                     -- ac x cd / ab x cd
+    if s < 0 or s > 1 then
         return nil
     end
-    return ax + s * abx, y                      -- a + s * ab
+    if x1 > x2 then x1, x2 = x2, x1 end
+    local t = cross(x2-ax, y-ay, abx, aby) / aby -- ac x ab / ab x cd
+    if t < 0 or t > (x2-x1) then
+        return nil
+    end
+    return ax + s * abx, y                       -- a + s * ab
 end
 ```
 
-### 
+## Vertical line segments
+
+Vertical line segments are almost the same, with the exception that, because we choose our vector as (0,1), the direction of $$cd$$ is opposite to that of our horizontal segment. Thus we need to use the smallest of c and d to build $$ac$$.
+
+```lua
+function intersectSegmentVerticalSegment(ax, ay, bx, by, x, y1, y2)
+    local abx, aby = bx - ax, by - ay            -- ab
+                                                 -- cd is (-1,0)
+                                                 -- ab x cd is abx
+    if abx < 0.00001 and abx > -0.00001 then
+        -- Collinear if ac x cd == 0, x-ax == 0 in this case
+        -- parallel otherwise
+        return nil
+    end
+    local s = (x - ax) / abx                     -- ac x cd / ab x cd
+    if s < 0 or s > 1 then
+        return nil
+    end
+    if y1 > y2 then y1, y2 = y2, y1 end
+    local t = cross(x-ax, y1-ay, abx, aby) / abx -- ac x ab / ab x cd
+    if t < 0 or t > (y2-y1) then
+        return nil
+    end
+    return x, ay + s * aby                       -- a + s * ab
+end
+```
+
+## 
