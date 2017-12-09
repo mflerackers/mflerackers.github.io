@@ -5,7 +5,7 @@ math: true
 ---
 
 | : ---- : |
-| [Previous - Vector projection](3-vector-projection.html) | [Next - Lines] |
+| [Previous - Vector projection](3-vector-projection.html) | [Next - Lines](5-lines.html) |
 
 # [Math for game development](../) : Transformations as matrices
 
@@ -511,7 +511,7 @@ $$\begin{pmatrix}
   \textbf{d} & \textbf{e} & f \\
   0 & 0 & 1
  \end{pmatrix}$$
- 
+
 Note that we strategically take a and d, not for example a and b. This is because both a and d are multiplied by the same factor. Since the arc tangent uses the slope, or d divided by a, this factor is eliminated.
 
 $$\begin{pmatrix}
