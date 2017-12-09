@@ -530,15 +530,15 @@ end
 
 The scale poses a bit of a problem as we actually need to erase the rotation. Element a is equal to $$x*cos(\alpha)$$, while d is equal to $$x*sin(\alpha)$$. What we can do is make use of the fact that $$\\cos(\alpha)^2+sin(\alpha)^2=1$$ since $$\langle cos, sin\rangle$$ is a normalized vector. If we write out $$a^2+d^2$$, we have
 
-$$(x*cos(\alpha))^2+(x*sin(\alpha))^2=$$
+$$a^2+d^2=(x*cos(\alpha))^2+(x*sin(\alpha))^2$$
 
 Which we can write as
 
-$$x^2*cos(\alpha)^2+x^2*sin(\alpha)^2=$$
+$$a^2+d^2=x^2*cos(\alpha)^2+x^2*sin(\alpha)^2$$
 
 Extracting the common factor we get
 
-$$x^2*(cos(\alpha)^2+sin(\alpha)^2)=x^2*1$$
+$$a^2+d^2=x^2*(cos(\alpha)^2+sin(\alpha)^2)=x^2*1$$
 
 So if we take the square root of the above formula we get
 
@@ -550,6 +550,188 @@ function Transform:getScale()
            math.sqrt(self.b * self.b + self.e * self.e)
 end
 ~~~
+
+## Applications
+
+### Transforming objects
+
+If we want to transform an object by giving it a translation, rotation and scale, we need to do these individual transformations in the correct order. Two translations can be done in any order, as they are commutative. The same can be said for two rotations or two scales. 
+
+If however we do a translation after a scale, the translation will be influenced by the scale. Similarly if we scale before we rotate, the scale will use the old x and y axis instead of the rotated ones.
+
+The correct order, for transforming an object, is to do the translation first, then the rotation and finally the scale.
+
+```lua
+function Object:transform()
+  translate(self.x, self.y)
+  rotate(self.angle)
+  scale(self.scale, self.scale)
+end
+```
+
+Vertices emitted after these transformations will be first scaled in their local coordinate system. Then they will be rotated, and finally translated to their global position.
+
+If we want a flexible anchor for scaling or rotating around, we need to add a translation so that the anchor becomes the local origin before scaling. We need to undo this translation afterwards so that our object is positioned correctly.
+
+```lua
+function Object:transform()
+  translate(self.x+self.anchorX, self.y+self.anchorY)
+  rotate(self.angle)
+  scale(self.scale, self.scale)
+  translate(-self.anchorX, -self.anchorY)
+end
+```
+
+As you see we can combine our undo of the anchor with the positioning of the object, saving one transformation.
+
+### Hierarchical transformations
+
+In a lot of cases, whether using transformations in a game scene, an animated character, or a GUI, there is a certain hierarchy of components where the transformation of a parent component influences the transformation of its child components. For example moving a window, will move its buttons as well.
+
+When we look at one component, for example a button, we talk about its local transformation inside its parent, for example 10 pixels right and 20 down from the left top of the window, and its global transformation, the distance from the left top of the screen.
+
+Now the question is, at drawing time, how do we get the global transformation to transform our vertices?
+
+We could of course travel all the way to the parent, then travel the path in reverse while multiplying the local transformations of every component we meet, but that would mean all lot of overhead by multiplying the same transformations for every component.
+
+We could travel the tree depth first starting from the root, and store the global matrix for each component. While that might cost us quite some additional memory, having the transformation matrix stored can be handy for inverse transformations in the case of clicking or selection.
+
+If we want a more flexible system, we can use a transformation stack. We can pre-allocate this stack to the maximum depth we expect, and place an identity matrix at the top. When we want to do some transformations in a component, we first push a copy of the current stack top onto the stack, do our modifications and pop the copy from the stack when we're done. Note that no actual allocations or deallocations happen as we merely change the pointer or index indicating the current top.
+
+```lua
+local TransformStack = class()
+function TransformStack:__init(n)
+    n = n or 32
+    self._stack = {}
+    for i=1,n do table.insert(self._stack, Transform()) end
+    self._index = 1
+    self._top = self._stack[self._index]
+end
+
+function TransformStack:push()
+    if self._index == #self._stack then error("Transform stack is full") end
+    local from = self._stack[self._index].matrix
+    local to = self._stack[self._index+1].matrix
+    for i=1,6 do to[i] = from[i]; end
+    self._index = self._index + 1
+    self._top = self._stack[self._index]
+end
+
+function TransformStack:pop()
+    if self._index == 1 then error("Transform stack is empty") end
+    self._index = self._index - 1
+    self._top = self._stack[self._index]
+end
+
+function TransformStack:top()
+    return self._top
+end
+```
+
+### Camera transformations in games
+
+Since we want the center of our camera view on the center of the screen, we do an initial translation.
+
+```lua
+function Camera:transform()
+  translate(screenCenterX,screenCenterY)
+end
+
+function Camera:transformPoint(x,y)
+  return x+screenCenterX, y+screenCenterY
+end
+```
+
+#### Panning
+
+We pan by translating the world in the inverse direction of the camera. If the camera goes left, the world moves right relative to the camera.
+
+```lua
+function Camera:moveTo(x,y)
+  self.x = x
+  self.y = y
+end
+
+function Camera:moveBy(x,y)
+  self.x = self.x + x
+  self.y = self.y + y
+end
+
+function Camera:transform()
+  translate(screenCenterX-self.x, screenCenterY-self.y)
+end
+
+function Camera:transformPoint(x,y)
+  return x+screenCenterX-self.x, y+screenCenterY-self.y
+end
+```
+
+#### Zooming
+
+If we want to zoom in, we use a scale factor greater than 1, making everything bigger. For zooming out, we use a scale smaller than 1, making everything smaller on the screen.
+
+If we translate the camera as well, this needs to be done before scaling, which in case of post multiplied matrices means multiplying the translation matrix last.
+
+```lua
+function Camera:zoomTo(s)
+  self.zoom = s
+end
+
+function Camera:zoomBy(s)
+  self.zoom = self.zoom * s
+
+function Camera:transform()
+  translate(screenCenterX, screenCenterY)
+  scale(self.zoom)
+  translate(-self.x, -self.y)
+end
+
+function Camera:transformPoint(x,y)
+  return screenCenterX+self.zoom*(x-self.x), screenCenterY+self.zoom*(y-self.y)
+end
+```
+
+#### Rotating
+
+If we need rotation as well, we do this after translating and before scaling. In our case, since we probably scale uniformly, thus x and y by the same factor, the order of rotation and scale isn't that important, however if you use different factors for x and y, you need to be careful.
+
+```lua
+function Camera:rotateTo(angle)
+  self.angle = angle
+end
+
+function Camera:rotateBy(angle)
+  self.angle = self.angle + angle
+
+function Camera:transform()
+  translate(screenCenterX, screenCenterY)
+  scale(self.zoom)
+  rotate(-self.angle)
+  translate(-self.x, -self.y)
+end
+
+function Camera:transformPoint(x,y)
+  x, y = x-self.x, y-self.y
+  local c = math.cos(-self.angle)
+  local s = math.sin(-self.angle)
+  return screenCenterX + self.zoom*(c*x-s*y), screenCenterY + self.zoom*(s*x+c*y)
+end
+```
+
+### Selection
+
+Let's pretend we are making an RTS game, and we want to select units using the mouse. This is easy when world and screen space match, but what if the camera allows us to pan around the screen, zoom out or even rotate the world to see what's behind those trees?
+
+A naive thought would be to transform all units one by one to screen space and test  whether our mouse coordinates, which are given in screen space, are inside the transformed collision shapes, be it circles, triangles, boxes or polygons.
+
+A much better way would be to just transform our mouse coordinates to world space, since it only requires one point transform. This is where the inverse transform comes into play, as we only have the camera transformation from world to screen, in order to transform from screen to world, we need to calculate the inverse transformation. Note that it is still faster than transforming many objects to screen space. Also, if the camera isn't moving during selection, the inverse doesn't need to be calculated every frame.
+
+```lua
+function love.mousepressed(x, y, button, istouch)
+  x, y = stack.top().inverse().transform(x, y)
+  -- Check for all selectable entities whether they intersect with x, y
+end
+```
 
 | : ---- : |
 | [Previous - Vector projection](3-vector-projection.html) | [Next - Lines](5-lines.html) |
