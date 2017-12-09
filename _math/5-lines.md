@@ -114,9 +114,15 @@ Before we go on, let's note that $$\vec{ab}\times\vec{cd}$$ can be 0, and we sho
 
 To know whether the lines are collinear, we can look whether $$\vec{ac}\times\vec{cd}$$ is 0. because in that case, all points lie on the same line.
 
-Now that we know s, we can calculate the point p from the formula $$p=a+s*\vec{ab}$$. This gives us the intersection point. Note that if the lines are collinear, we still return nil, as we can't tell what point to return when everything collides. 
+Now that we know s, we can calculate the point p from the formula
 
-~~~ Lua
+$$
+p=a+s*\vec{ab}
+$$
+
+This gives us the intersection point. Note that if the lines are collinear, we still return nil, as we can't tell what point to return when everything collides. 
+
+```lua
 function intersectLines(ax, ay, bx, by, cx, cy, dx, dy)
     local abx, aby = bx - ax, by - ay           -- ab
     local cdx, cdy = dx - cx, dy - cy           -- cd
@@ -128,20 +134,21 @@ function intersectLines(ax, ay, bx, by, cx, cy, dx, dy)
     s = cross(cx - ax, cy - ay, cdx, cdy) / s   -- ac x cd / ab x cd
     return ax + s * abx, ay + s * aby           -- a + s * ab
 end
-~~~
+```
 
 ### Point on line
 
 Let's say we have the line through points a and b, and we need to know whether c is on the same line. Remember how we tested for parallel and collinear lines using the cross product? That is exactly what we need now. If we build a vector from a to c called ac, and cross it with the vector ab, the result is 0 if c lies on ab.
 
-~~~ Lua
+```lua
 function pointOnLine(ax, ay, bx, by, cx, cy)
     local abx, aby = bx - ax, by - ay -- ab
     local acx, acy = cx - ax, cy - ay -- ac
     local t = cross(abx, aby, acx, acy) -- ab x ac
     return t < 0.00001 and t > -0.00001
 end
-~~~
+```
+
 ## Line segments
 
 Sometimes our lines don't go to infinity in both directions, but have given boundaries. Line segments are not much different in usage compared to lines, except for some extra tests to make sure we are actually still on the line segment. Given a segment between points $$a$$ and $$b$$, we saw we could define the line as
@@ -158,7 +165,7 @@ We can observe that if $$s$$ is 0, $$p$$ is equal to $$a$$, while if $$s$$ is 1,
 
 Given what we know from line intersection, intersecting a line segment with another line is not so hard. We only need to be sure that the intersection point is actually within the segment(s). This is simple if we have s for the point on the segment. If $$s$$ is outside the interval [0,1], the point is outside the range of the segment. We can use this test to know whether our intersection point lies on the segment.
 
-~~~ Lua
+```lua
 function intersectSegmentLine(ax, ay, bx, by, cx, cy, dx, dy)
     local abx, aby = bx - ax, by - ay           -- ab
     local cdx, cdy = dx - cx, dy - cy           -- cd
@@ -173,43 +180,55 @@ function intersectSegmentLine(ax, ay, bx, by, cx, cy, dx, dy)
     end
     return ax + s * abx, ay + s * aby           -- a + s * ab
 end
-~~~
+```
 
 #### Line segment and line segment
 
 To know whether our intersection point lies on the second segment, we need to calculate $$t$$ like we calculated $$s$$ before.
+
 $$
 a+s*\vec{ab}=c+t*\vec{cd}
 $$
+
 If we subtract c from both sides we get
+
 $$
 a-c+s*\vec{ab}=c-c+t*\vec{cd}
 $$
+
 The point $$c$$ subtracted from $$a$$ gives us the vector $$\vec{ca}$$
+
 $$
 \vec{ca}+s*\vec{ab}=t*\vec{cd}
 $$
+
 Now we use the cross product with $$\vec{ab}$$ to get rid of the term $$s*\vec{ab}$$, as $$\vec{ab}\times\vec{ab}$$ is 0.
+
 $$
 \vec{ca}\times\vec{ab}+s*\vec{ab}\times\vec{ab}=t*\vec{cd}\times\vec{ab}
 $$
+
 Erasing the 0 term gives us
+
 $$
 \vec{ca}\times\vec{ab}=t*\vec{cd}\times\vec{ab}
 $$
+
 This means that t is
+
 $$
 t=\frac{\vec{ca}\times\vec{ab}}{\vec{cd}\times\vec{ab}}
 $$
+
 Now we already have $$\vec{ab}\times\vec{cd}$$, and we know that $$\vec{cd}\times\vec{ab}=-\vec{ab}\times\vec{cd}$$ because switching vectors in a cross product gives use the cross product of the other angle, and $$sin(\alpha)=-sin(-\alpha)$$. We also have $$\vec{ac}$$, while here we require $$\vec{ca}$$. If we invert the vector $$\vec{ca}$$ to the vector $$\vec{ac}$$ in $$\vec{ca}\times\vec{ab}$$ however, we invert the sign once more, as $$\vec{ca}\times\vec{ab}=-\vec{ac}\times\vec{ab}$$.  So we get
 
 $$
 s=\frac{\vec{ca}\times\vec{ab}}{\vec{cd}\times\vec{ab}}=\frac{-\vec{ac}\times\vec{ab}}{-\vec{ab}\times\vec{cd}}=\frac{\vec{ac}\times\vec{ab}}{\vec{ab}\times\vec{cd}}
 $$
 
-Using this we can efficiently write the checks to see if our point lies within the other segment using already calculated values.
+Using this we can efficiently write the tests to see if our point lies within the other segment using already calculated values.
 
-```Lua
+```lua
 function intersectSegments(ax, ay, bx, by, cx, cy, dx, dy)
     local abx, aby = bx - ax, by - ay           -- ab
     local cdx, cdy = dx - cx, dy - cy           -- cd
@@ -239,7 +258,7 @@ If the point is on the line, we need to test whether it lies between the segment
 
 To be sure that the point doesn't lie past the end of the segment, we can look whether the dot product of $$\vec{ac}$$ with itself is smaller than the dot product of $$\vec{ab}$$ with itself, as the dot product gives us the length squared.
 
-~~~ Lua
+```lua
 function pointOnSegment(ax, ay, bx, by, cx, cy)
     local abx, aby = bx - ax, by - ay        -- ab
     local acx, acy = cx - ax, cy - ay        -- ac
@@ -254,7 +273,8 @@ function pointOnSegment(ax, ay, bx, by, cx, cy)
     t = dot(acx, acy, acx, acy)            -- ac . ac
     return t <= dot(abx, aby, abx, aby)    -- ab . ab
 end
-~~~
+```
+
 ## Rays
 
 A ray is a segment which is bounded at one side, the origin, while it stretches to infinity one the other side. Rays have various usages. As rays of light to determine highlights for example. The dot product of the ray with a surface normal gives a simple but fast diffuse shading. Or to determine where shadows fall by determining walls whose normals point towards the light and projecting those walls further along the ray. Sometimes a line segment is used as a ray, like when determining visibility from the player's position when there is a "fog of war", as the ray needs a limited range in that case.
@@ -263,7 +283,7 @@ A ray is a segment which is bounded at one side, the origin, while it stretches 
 
 Intersecting a ray with a line is similar to a segment with a line except that we only need to test for t < 0, as the ray is only bounded at the origin.
 
-~~~ Lua
+```lua
 function intersectRayLine(ax, ay, bx, by, cx, cy, dx, dy)
     local abx, aby = bx - ax, by - ay           -- ab
     local cdx, cdy = dx - cx, dy - cy           -- cd
@@ -278,13 +298,13 @@ function intersectRayLine(ax, ay, bx, by, cx, cy, dx, dy)
     end
     return ax + s * abx, ay + s * aby           -- a + s * ab
 end
-~~~
+```
 
 ### Point on ray
 
 Also here we just need to test whether the point is not before the origin of the ray.
 
-~~~ Lua
+```lua
 function pointOnRay(ax, ay, bx, by, cx, cy)
     local abx, aby = bx - ax, by - ay        -- ab
     local acx, acy = cx - ax, cy - ay        -- ac
@@ -294,7 +314,7 @@ function pointOnRay(ax, ay, bx, by, cx, cy)
     end
     return dot(abx, aby, acx, acy) >= 0      -- ab . ac
 end
-~~~
+```
 
 ## Subdivision
 
@@ -347,61 +367,83 @@ end
 ```
 
 Can we simplify this? What does $$s<0$$ and $$s>0$$ mean in this case? well, let's find out. The inequality
+
 $$
 \frac{y-a_y}{b_y-a_y}<0
 $$
+
 has two solutions, depending whether $$b_y-a_y$$ is positive or negative.
 
 If $$b_y-a_y$$ is positive, thus $$b_y>a_y$$, multiplying both sides with $$b_y-a_y$$ keeps the inequality as $<$, thus
+
 $$
 y-a_y < 0
 $$
+
 or
+
 $$
 y < a_y
 $$
+
 If $$b_y-a_y$$ is negative, thus $$b_y<a_y$$, we need to flip the inequality when multiplying, so we get
+
 $$
 y-a_y > 0
 $$
+
 or
+
 $$
 y>a_y
 $$
+
 For the other inequality
+
 $$
 \frac{y-a_y}{b_y-a_y}>1
 $$
+
 we can do the same. If $$b_y-a_y$$ is positive, thus $$b_y>a_y$$, we get
+
 $$
 y-a_y>b_y-a_y
 $$
+
 Or, if we add $$a_y$$ on both sides
+
 $$
 y>b_y
 $$
+
 Similarly when $$b_y-a_y$$ is negative, thus $$b_y<a_y$$ we get
+
 $$
 y<b_y
 $$
+
 So to summarize, we have that if $$b_y>a_y$$, we don't have an intersection if $$y < a_y$$ or $$y>b_y$$. When $$b_y<a_y$$, we don't have an intersection if $$y>a_y$$ or $$y<b_y$$. In code this would be expressed as for example
 
-~~~ Lua
+```lua
 if y < min(ay,by) or y > max(ay,by) then
   return nil
 end
-~~~
+```
 
 Thus we don't have an intersection if the segment lies entirely above or under the horizontal line at y. Whether you use s < 0 or s > 1 or this min-max test won't make a difference, but since you already need to calculate s to get the intersection, testing s with 0 and 1 will be faster than doing 2 extra comparisons (and potential function calls). But I hope this analysis shows what exactly is being tested.
 
 If the test, whichever we choose, indicates an intersection, we can calculate the intersection point, which was
+
 $$
 i_x=a_x+s*(b_x-a_x)\\i_y=a_y+s*(b_y-a_y)
 $$
+
 if we fill in s we get
+
 $$
 i_x=a_x+\frac{y-a_y}{b_y-a_y}*(b_x-a_x)\\i_y=a_y+\frac{y-a_y}{b_y-a_y}*(b_y-a_y)
 $$
+
 For $$i_y$$ we can remove the division by $$b_y-a_y$$ since we multiply by $$b_y-a_y$$ as well. Then we can erase $$a_y$$ as well as it is negated by $$-a_y$$. So $$i_y=y$$ as we would expect of an intersection with an horizontal line at y.
 
 For $$i_x$$ we see that we actually compute the slope of the line as $$\frac{dx}{dy}$$ which we then multiply with the distance of $$a_y$$ to the line, thus getting the distance of $$a_x$$ to the line. Adding $$a_x$$ and its distance to the line gives us the intersection coordinate $$i_x$$.
@@ -450,13 +492,13 @@ end
 
 ## horizontal line segments
 
-While lines can be useful to test against screen borders, in real situations it is more useful if we can test against line segments, like those of walls or boxes. We can do this like we did for lines, but in this case we need to pay more attention to the fact that the length of our direction vector (-1, 0) doesn't match our actual line segment length of $$l=|x1-x2|$$.
+While lines can be useful to test against screen borders, in real situations it is more useful if we can test against line segments, like those of walls or boxes. We can do this like we did for lines, but in this case we need to pay attention to the fact that the length of our direction vector (-1, 0) doesn't match our actual line segment length of $$l=abs(x1-x2)$$.
 
-What actually happens when the direction vector of the horizontal segment has length 1 instead of the actual length $$l$$? Since the cross product is a product, and one of the factors is $$l$$ times smaller, the product itself will be $$l$$ times smaller. Thus every cross product involving $$cd$$, which has been replaced with (-1,0) will be $$|cd|$$ times smaller.
+What actually happens when the direction vector of the horizontal segment has length 1 instead of the actual length $$l$$? Since the cross product is a product, and one of the factors is $$l$$ times smaller, the product itself will be $$l$$ times smaller. Thus every cross product involving $$cd$$, which has been replaced with (-1,0) will be $$\lvert cd\rvert$$ times smaller.
 
 For $$s$$ this gives no change, as for $$s$$, $$cd$$ features in both the numerator and denominator and it cancels itself out.
 
-For $$t$$ however, $$cd$$ is only present in the denominator. Since the denominator is $$|cd|$$ times smaller than it should be, $$t$$ will be $$|cd|$$ times greater than we expect it to be. Thus we need to adapt our test of $$t>1$$ to $$t>|cd|$$.
+For $$t$$ however, $$cd$$ is only present in the denominator. Since the denominator is $$\lvert cd\rvert$$ times smaller than it should be, $$t$$ will be $$\lvert cd\rvert$$ times greater than we expect it to be. Thus we need to adapt our test of $$t>1$$ to $$t>\lvert cd\rvert$$.
 
 To get the length of $$cd$$ we could subtract d from c and take the absolute value. However we need to know which of c or d is greater than the other because we decided to use the vector (-1,0) as approximation of $$cd$$ and thus the direction of $$cd$$ needs to match this. This is important when calculating $$ac$$. Once we know which is greater, an absolute value is no longer needed, we just subtract the smaller one from the greater one.
 
