@@ -223,7 +223,7 @@ $$
 Now we already have $$\vec{ab}\times\vec{cd}$$, and we know that $$\vec{cd}\times\vec{ab}=-\vec{ab}\times\vec{cd}$$ because switching vectors in a cross product gives use the cross product of the other angle, and $$sin(\alpha)=-sin(-\alpha)$$. We also have $$\vec{ac}$$, while here we require $$\vec{ca}$$. If we invert the vector $$\vec{ca}$$ to the vector $$\vec{ac}$$ in $$\vec{ca}\times\vec{ab}$$ however, we invert the sign once more, as $$\vec{ca}\times\vec{ab}=-\vec{ac}\times\vec{ab}$$.  So we get
 
 $$
-s=\frac{\vec{ca}\times\vec{ab}}{\vec{cd}\times\vec{ab}}=\frac{-\vec{ac}\times\vec{ab}}{-\vec{ab}\times\vec{cd}}=\frac{\vec{ac}\times\vec{ab}}{\vec{ab}\times\vec{cd}}
+t=\frac{\vec{ca}\times\vec{ab}}{\vec{cd}\times\vec{ab}}=\frac{-\vec{ac}\times\vec{ab}}{-\vec{ab}\times\vec{cd}}=\frac{\vec{ac}\times\vec{ab}}{\vec{ab}\times\vec{cd}}
 $$
 
 Using this we can efficiently write the tests to see if our point lies within the other segment using already calculated values.
