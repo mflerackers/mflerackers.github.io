@@ -1,5 +1,4 @@
 ---
-layout: default
 title: Transformations as matrices
 math: true
 ---
@@ -7,9 +6,7 @@ math: true
 | : ---- : |
 | [Previous - Vector projection](3-vector-projection.html) | [Next - Lines](5-lines.html) |
 
-# [Math for game development](../) : Transformations as matrices
-
-# Transformations as matrices
+## Why use matrices
 
 Matrices are not a requirement for transforming positions or geometry. Often it is more efficient to build the needed formulas like we did, as allocating, building and multiplying matrices does not come cheap. Where matrices are most handy is when we have an hierarchy of components where a parent component influences the transformation of a child component. In that situation matrices are an indispensable tool.
 All the formulas presented here use the OpenGL conventions. This means we will post-multiply matrices and vectors. If for some reason you need matrices for pre-multiplication instead, you only need to transpose the given matrices.

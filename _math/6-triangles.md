@@ -1,12 +1,10 @@
 ---
-layout: default
 title: Triangles
 math: true
 ---
 
-[Previous - Lines](5-lines.html)
-
-# [Math for game development](../) : Triangles
+| : ---- : |
+| [Previous - Lines](5-lines.html) | Next - Polygons |
 
 ## Triangles
 
@@ -109,30 +107,46 @@ end
 
 A common, and for some dreaded, theme concerning triangles is the properties of a right-angled triangle. Given an angle and a side, calculate the remaining sides for example. However, we don't need to learn or remember anything we haven't covered yet.
 
-Let's start by laying the triangle in our favorite configuration.
+Let's start by laying the triangle in our favorite configuration. First we rotate the triangle towards the x axis.
 
-We can see that once more we can say that if the length of c was 1, then a would be equal to the cosine, while b would be equal to the sine. Since c is most likely not 1, we need to scale the cosine and sine by the length of c, thus
+![rotate_triangle](/assets/rotate_triangle.png)
+
+Then we scale it so that the length of c is 1.
+
+![rotate_scale_triangle](/assets/rotate_scale_triangle.png)
+
+We can see that if the length of c was 1, then a would be equal to the cosine, while b would be equal to the sine. Since c in most situations is not 1, we need to scale the cosine and sine by the length of c, thus
+
 $$
 a=c*cos(\alpha)\\
 b=c*sin(\alpha)
 $$
+
 That's all there is to it. Don't have $$\alpha$$ but $$\beta$$? Just turn the triangle, or use $$\alpha=90-\beta$$, since the sum of the angles is 180 degrees and one of them is 90. Don't have c? Just divide both sides of the equation by cosine and sine respectively.
+
 $$
 c=\frac{a}{cos(\alpha)} \\
 c=\frac{b}{sin(\alpha)}
 $$
-Also since we know that $$cos(\alpha)^2+sin(\alpha)^2 =1$$, since the dot product of the vector with itself gives us its length, which is equal to 1, we can write
+
+Also since we know that $$cos(\alpha)^2+sin(\alpha)^2 =1$$, since the dot product of the vector with itself gives us its squared length, which is equal to 1, we can write
+
 $$
 c^2*cos(\alpha)^2+c^2*sin(\alpha)^2 =c^2
 $$
-Or 
+
+by multiplying each side with $$c^2$$. If we regroup the terms we get 
+
 $$
 (c*cos(\alpha))^2+(c*sin(\alpha))^2 =c^2
 $$
+
 Which gives us
+
 $$
 a^2+b^2 =c^2
 $$
+
 Unlike learning rules, this is something you can reconstruct any time you need it.
 
 ### General triangle

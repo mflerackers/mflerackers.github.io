@@ -1,9 +1,64 @@
-theme: jekyll-theme-minimal
+theme: minimal-mistakes-jekyll
 title: fromatogra
+name: Marc Flerackers
 description: Software and mathematics
-markdown: kramdown
-google_analytics: UA-109740765-1
+url: "https://fromatogra.com"
+repository: "mflerackers/mflerackers.github.io"
+twitter:
+  username: "mflerackers"
+social:
+  type:  Person
+  name:  Marc Flerackers
+  links:
+    - "https://twitter.com/mflerackers"
+head_scripts:
+  - "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+analytics:
+  provider: "google-gtag"
+  google:
+    tracking_id: "UA-109740765-1"
+author:
+  name   : "Marc Flerackers"
+  avatar : "/assets/images/bio-photo.jpg"
+  bio    : "Software engineer."
+  email  : # optional
+  uri    : "http://fromatogra.com"
+  home   : # null (default), "absolute or relative url to link to author home"
 collections:
   math:
     output: true
     permalink: /:collection/:name
+defaults:
+  # _posts
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: single
+      author_profile: true
+      read_time: true
+      comments: true
+      share: true
+      related: true
+  - scope:
+      path: ""
+      type: pages
+    values:
+      layout: single
+      author_profile: true
+      read_time: true
+      comments: true
+      share: true
+      related: true
+  - scope:
+      path: ""
+      type: math
+    values:
+      layout: single
+      author_profile: true
+      read_time: true
+      comments: true
+      share: true
+      related: true
+markdown: kramdown
+breadcrumbs: true

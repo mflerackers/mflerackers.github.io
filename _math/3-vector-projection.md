@@ -1,5 +1,4 @@
 ---
-layout: default
 title: Vector projection
 math: true
 ---
@@ -7,10 +6,7 @@ math: true
 | : ---- : |
 | [Previous - Angles](2-angles.html) | [Next - Matrices](4-matrices.html) |
 
-
-# [Math for game development](../) : Vector projection
-
-## Vector projection
+## Why vector projection
 
 A projection of a vector onto another vector has many applications.
 

@@ -1,14 +1,12 @@
 ---
-layout: default
 title: Lines
 math: true
 ---
 
-[Previous - Matrices](4-matrices.html)
+| : ---- : |
+| [Previous - Matrices](4-matrices.html)| [Next - Triangles](6-triangles.html) |
 
-# [Math for game development](../) : Lines
-
-## Lines
+## Line equations
 
 A line can be defined using any two points lying on the line. Let's call the points on our line $$a$$ and $$b$$. If we draw a line through these two points, we end up with our original line.
 
@@ -552,4 +550,5 @@ function intersectSegmentVerticalSegment(ax, ay, bx, by, x, y1, y2)
 end
 ```
 
- [Previous - Matrices](4-matrices.html)
+| : ---- : |
+| [Previous - Matrices](4-matrices.html)| [Next - Triangles](6-triangles.html) |

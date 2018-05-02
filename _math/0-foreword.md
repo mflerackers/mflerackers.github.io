@@ -1,14 +1,10 @@
 ---
-layout: default
 title: Foreword
 math: true
 ---
 
-[Next - Points and Vectors](1-points-and-vectors.html)
-
-# [Math for game development](../) : Foreword
-
-## Foreword
+| : ---- : |
+| | [Next - Points and Vectors](1-points-and-vectors.html) |
 
 I would have liked to say that this book in progress was written for the love of mathematics, or the goal of revisiting and understanding every detail of the mathematics we use as we research new methods in graphics, write commercial animation software or create games. However that would only be half the truth. An equal amount stems from the frustration of seeing many game developers either struggle with creating their vision, writing wrong or superfluous mathematical statements or even just copy pasting code without understanding what they are doing.
 
