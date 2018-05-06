@@ -6,33 +6,108 @@ math: true
 | : ---- : |
 | [Previous - Lines](5-lines.html) | Next - Polygons |
 
-## Triangles
+## Triangle definition
 
-A triangle is a polygon with 3 points. The order of the points indicates the winding order, clockwise or counter clockwise.
+A triangle is a polygon with 3 points. 
 
-### Baricentric coordinates
+## Triangle winding order
 
-The baricentric coordinates of a point in a triangle is a triplet where each dimension indicates the relative distance to one of the points. If this sounds too complex, let us look at some examples.
+The order of the points indicates the winding order, clockwise or counter clockwise.
 
-The baricentric coordinates of A are $$(1,0,0)$$ as A is closest to A and furthest from the other points.
+To know whether a given triangle A, B, C has clockwise (cw) or counter clockwise (ccw) order, you can look at the sign of the cross product of AB and AC. How cw and ccw are mapped to a positive or negative cross product depends on how your cross product is defined and whether your y axis points up or down. Remember, the cross product of two vectors is the scaled sine of the angle between the vectors. When you use a mathematical coordinate system where y is up, ccw is positive and cw is negative. However in most graphical systems where y is down, cw is positive and ccw is negative. 
 
-For a point in the middle of the line AB the baricentric coordinates would be $$(0.5,0.5,0)$$ as the point is equally far from A as from B, and as far as is posible from C while staying inside the triangle.
+```lua
+function triangleWindingOrder(ax,ay,bx,by,cx,cy)
 
-The center will have as barycentric coordinates $$(\frac{1}{3},\frac{1}{3},\frac{1}{3})$$.
+    local abx, aby = vector(ax, ay, bx, by)
+    local acx, acy = vector(ax, ay, cx, cy)
+    local w = cross(abx, aby, acx, acy)
 
-To reconstruct the point, we just multiply each point of the triangle with its corresponding barycentric coordinate, and add the resulting terms.
-
-$$
-P=aA+bB+cC
-$$
+    if w < 0.0 then
+      return "ccw"
+    else
+      return "cw"
+    end
+end
+```
 
 ### Triangle center
 
 Given the three points of the triangle A, B, C, we can calculate the center of the triangle as $$\frac{A+B+C}{3}$$.
 
-### Point in triangle
+## Barycentric coordinates
 
-#### Using barycentric coordinates
+### Concept
+
+Every point can be written as a linear combination of the points of a triangle. The coefficients of this linear combination are called the barycentric coordinates of that point with respect to the triangle.
+
+Lets look at a few examples. We have the triangle A, B, C. To make A from a linear combination of the points of the triangle, we can simply write
+
+$$
+1*A+0*B+0*C
+$$
+
+So the barycentric coordinates of A are $$(1, 0, 0)$$.
+
+For a point halfway between A and B, we can write
+
+$$
+0.5*A+0.5*B+0*C
+$$
+
+So the barycentric coordinates of the halfway point between A and B are $$(0.5, 0.5, 0)$$. This is what we saw when we covered lines, any point between A and B can be written as $$A+t*(B-A)$$ or rewritten $$(1-t)*A+t*B$$ with t between 0 and 1. If t is not between 0 and 1, the point lies outside the line. Thus as long as the sum of the coefficients is 1, $$(1-t)+t$$, the point lies on the line.
+
+Now let's take a point which lies in the middle of the triangle. Since this point can be calculated by adding all the points and dividing the sum by 3, we can write this point as
+
+$$
+\frac{1}{3}*A+\frac{1}{3}*B+\frac{1}{3}*C
+$$
+
+This point is called the centroid or barycenter of the triangle. Note that the sum of the coefficients is 1.
+
+If we move the point from the center towards A, the coefficient for A will increase, while the other two coefficients, for B and C, will decrease.
+
+Likewise if we move the center point towards the middle of A and B. The coefficients for A and B will increase while the coefficient for C will decrease.
+
+### Usage
+
+We see that the barycentric coordinates of a point can tell us the relative distance towards each point in the triangle. They can also tell us whether a point lies within or outside the triangle as we will use shortly.
+
+The most common place to encounter them however is triangle rendering. If you've ever rendered a triangle, and it had either vertex colors or was textured, barycentric coordinates where used as the weights of the color or texture coordinates. If a point P has barycentric coordinates $$(a, b, c)$$ so that
+
+$$
+P=a*A+b*B+c*C
+$$
+
+and the vertices have colors $$C_1$$, $$C_2$$ and $$C_3$$, the color C at point P is
+
+$$C=a*C_1+b*C2+c*C_3$$
+
+The texture coordinates are interpolated across the triangle in the same way. In a game this can be used for more than just visual properties however. If our game uses triangles to define the terrain, vertices can store for example speed factors to slow down units on certain places like sand or swamp ground. By calculating the speed factor at the unit's position relative to the triangles points using barycentric coordinates, we can get smooth transitions between terrain types.
+
+### Calculation
+
+```lua
+function barycentricCoords(px,py,ax,ay,bx,by,cx,cy)
+    -- Check ABxAP relative to ABxAC
+    local abx, aby = vector(ax, ay, bx, by)
+    local acx, acy = vector(ax, ay, cx, cy)
+    local apx, apy = vector(ax, ay, px, py)
+    local denom = cross(abx, aby, acx, acy)
+    local numer = cross(abx, aby, apx, apy)
+    local c = numer / denom
+    
+    -- Check APxAC relative to ABxAC
+    numer = cross(apx, apy, acx, acy)
+    local b = numer / denom
+
+    return 1-c-b, b, c
+end
+```
+
+## Point in triangle
+
+### Using barycentric coordinates
 
 If we know that the barycentric coordinates are all within 0 and 1, and their sum is not greater than 1, we can say that the point is within the triangle.
 
@@ -62,7 +137,7 @@ function pointInTriangle2(px,py,ax,ay,bx,by,cx,cy)
 end
 ```
 
-#### Using edge tests
+### Using edge tests
 
 Another way to know whether a point p is inside a triangle is to check on which side the point lies for each edge. If the point lies on the side of the triangle for each side, it lies within the triangle.
 
@@ -151,3 +226,4 @@ Unlike learning rules, this is something you can reconstruct any time you need i
 
 ### General triangle
 
+If the triangle is not right-angled, it can be split in two right-angled triangles which you can solve separately. You can use vector projection to find a point on an edge opposite to the third point and create a new edge perpendicular to the edge.
