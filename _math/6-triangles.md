@@ -8,13 +8,11 @@ math: true
 
 ## Triangle definition
 
-A triangle is a polygon with 3 points. 
+A triangle is a polygon with 3 points. The order of the points is important, as it indicates the winding order, clockwise or counter clockwise.
 
 ## Triangle winding order
 
-The order of the points indicates the winding order, clockwise or counter clockwise.
-
-To know whether a given triangle A, B, C has clockwise (cw) or counter clockwise (ccw) order, you can look at the sign of the cross product of AB and AC. How cw and ccw are mapped to a positive or negative cross product depends on how your cross product is defined and whether your y axis points up or down. Remember, the cross product of two vectors is the scaled sine of the angle between the vectors. When you use a mathematical coordinate system where y is up, ccw is positive and cw is negative. However in most graphical systems where y is down, cw is positive and ccw is negative. 
+To know whether a given triangle A, B, C has a clockwise (cw) or counter clockwise (ccw) winding order, you can look at the sign of the cross product of AB and AC. How cw and ccw are mapped to a positive or negative cross product depends on how your cross product is defined and whether your y axis points up or down. Remember, the cross product of two vectors is the scaled sine of the angle between the vectors. When you use a mathematical coordinate system where y is up, ccw is positive and cw is negative. However in most graphical systems where y is down, cw is positive and ccw is negative. 
 
 ```lua
 function triangleWindingOrder(ax,ay,bx,by,cx,cy)
@@ -30,6 +28,12 @@ function triangleWindingOrder(ax,ay,bx,by,cx,cy)
     end
 end
 ```
+
+Remember, this cross product is actually the z of the normal of the triangle if it was a 3d space we were working in. So the sign shows whether that normal points into or out of the plane the triangle is in.
+
+$$
+(x_1, y_1, 0)\times(x_2, y_2, 0)=(0, 0, x_1*y_2-x2*y_1)
+$$
 
 ### Triangle center
 
@@ -141,7 +145,7 @@ end
 
 Another way to know whether a point p is inside a triangle is to check on which side the point lies for each edge. If the point lies on the side of the triangle for each side, it lies within the triangle.
 
-How do we test this? Fairly simple. We take the vector AB and the vector AC and calculate the cross product. Then we do the same with AB and AP. Remember that for the cross product, the order in which we take vectors will decide the sign of the result. If we take AB x AC, we know which sign gives a point on the correct side of AB. If AB x AP matches that sign, P lies on the same side of the triangle. If we repeat this for the other two edges, we can determine whether P lies inside the triangle.
+How do we test this? Fairly simple. We take the vector AB and the vector AC and calculate the cross product. Then we do the same with AB and AP. Remember that for the cross product, the order in which we take vectors will decide the sign of the result. If we take AB x AC, we know which sign gives a point on the correct side of AB. If AB x AP matches that sign, P lies on the same side as the triangle. If we repeat this for the other two edges, we can determine whether P lies inside the triangle.
 
 ```lua
 local function pointInTriangle(px,py,ax,ay,bx,by,cx,cy)
@@ -152,26 +156,27 @@ local function pointInTriangle(px,py,ax,ay,bx,by,cx,cy)
     local apx, apy = vector(ax, ay, px, py)
     local tside = cross(abx, aby, acx, acy)
     local pside = cross(abx, aby, apx, apy)
-    if (tside >=0 and pside < 0) or (tside < 0 and pside >= 0) then
+    if tside * pside < 0 then
       return false
     end
 
-    -- Check P relative to AC
-    pside = cross(apx, apy, acx, acy)
-    if (tside >=0 and pside < 0) or (tside < 0 and pside >= 0) then
+    -- Check P relative to BC
+    local bcx, bcy = vector(bx, by, cx, cy)
+    local bpx, bpy = vector(bx, by, px, py)
+    pside = cross(bcx, bcy, bpx, bpy)
+    if tside * pside < 0 then
       return false
     end
 
-    -- Check P relative to CB
-    local cax, cay = -acx, -acy
-    local cbx, cby = vector(cx, cy, bx, by)
+    -- Check P relative to CA
+    -- If we use AC instead of CA, our sign flips
+    -- but by using CPxAC instead of ACxCP our sign flips once more
     local cpx, cpy = vector(cx, cy, px, py)
-    tside = cross(cbx, cby, cax, cay)
-    pside = cross(cbx, cby, cpx, cpy)
-    if (tside >=0 and pside < 0) or (tside < 0 and pside >= 0) then 
+    pside = cross(cpx, cpy, acx, acy)
+    if (tside * pside < 0) then
       return false
     end
-
+    
     return true
 end
 ```
