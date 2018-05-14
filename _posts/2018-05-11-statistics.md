@@ -5,7 +5,7 @@ date:   2018-05-11 22:03:01 +0900
 categories: math
 ---
 
-## Data
+## Our data set
 
 For doing statistical calculations we need data. We will create some fake data points here to use as an example. We're growing plants and giving them a certain amount of sunlight. We measure the growth after a certain interval and place all this data into a table.
 
@@ -76,7 +76,7 @@ $$
 \frac{\sum_{i=1}^{n} (x_i-\overline{x})(y_i-\overline{y})}{n-1}
 $$
 
-Th covariance when calculated for the amount of light and plant growth is 11.2. To calculate this, we calculated the mean of our hours of light, which is 2.5. Then we took the sum of all products of the differences between light and light mean and growth and growth mean, finally dividing by 5.
+The covariance when calculated for the amount of light and plant growth is 11.2. To calculate this, we calculated the mean of our hours of light, which is 2.5. Then we took the sum of all products of the differences between light and light mean and growth and growth mean, finally dividing by 5.
 
 ## R
 
@@ -99,7 +99,7 @@ When we have two sets of samples, we can calculate a line which follows the tren
 
 A line can be defined as an equation $$y=ax+b$$, where a is the slope and b is the position where the line crosses the x axis, thus where y is 0.
 
-We can calculate the slope a as the covariance of x and y divided by the variance of x or
+We can calculate the slope a as the covariance of x and y divided by the variance of x. If we don't have the covariance and variance yet, there's a shorter formula which is identical. We'll quickly derive it here. We start with the formula for covariance of x and y over the variance of x
 
 $$
 a=\frac{\frac{\sum_{i=1}^{n} (x_i-\overline{x})(y_i-\overline{y})}{n-1}}{\frac{\sum_{i=1}^{n} (x_i-\overline{x})^2}{n-1}}
@@ -123,7 +123,7 @@ $$
 a=\frac{\sum_{i=1}^{n}x_iy_i-\sum_{i=1}^{n}x_i\overline{y}-\sum_{i=1}^{n}y_i\overline{x}+\sum_{i=1}^{n}\overline{x}\overline{y}}{\sum_{i=1}^{n}x_ix_i-\sum_{i=1}^{n}x_i\overline{x}-\sum_{i=1}^{n}x_i\overline{x}+\sum_{i=1}^{n}\overline{x}\overline{x}}
 $$
 
-We can pull out factors not independent of i
+We can pull out factors independent of i
 
 $$
 a=\frac{\sum_{i=1}^{n}x_iy_i-\overline{y}\sum_{i=1}^{n}x_i-\overline{x}\sum_{i=1}^{n}y_i+N\overline{x}\overline{y}}{\sum_{i=1}^{n}x_ix_i-\overline{x}\sum_{i=1}^{n}x_i-\overline{x}\sum_{i=1}^{n}x_i+N\overline{x}\overline{x}}
@@ -135,29 +135,25 @@ $$
 a=\frac{\sum_{i=1}^{n}x_iy_i-\frac{\sum_{i=1}^{n}y_i}{N}\sum_{i=1}^{n}x_i-\frac{\sum_{i=1}^{n}x_i}{N}\sum_{i=1}^{n}y_i+N\frac{\sum_{i=1}^{n}x_i}{N}\frac{\sum_{i=1}^{n}y_i}{N}}{\sum_{i=1}^{n}x_ix_i-\frac{\sum_{i=1}^{n}x_i}{N}\sum_{i=1}^{n}x_i-\frac{\sum_{i=1}^{n}x_i}{N}\sum_{i=1}^{n}x_i+N\frac{\sum_{i=1}^{n}x_i}{N}\frac{\sum_{i=1}^{n}x_i}{N}}
 $$
 
-Combining terms gives
+Grouping terms gives
 
 $$
-a=\frac{\sum_{i=1}^{n}x_iy_i-2\frac{\sum_{i=1}^{n}y_i\sum_{i=1}^{n}x_i}{N}+\frac{\sum_{i=1}^{n}x_i\sum_{i=1}^{n}y_i}{N}}{\sum_{i=1}^{n}x_ix_i-2\sum_{i=1}^{n}x_i\sum_{i=1}^{n}x_i-\sum_{i=1}^{n}x_i\sum_{i=1}^{n}x_i+\frac{\sum_{i=1}^{n}x_i\sum_{i=1}^{n}x_i}{N}}
+a=\frac{\sum_{i=1}^{n}x_iy_i-2\frac{\sum_{i=1}^{n}y_i\sum_{i=1}^{n}x_i}{N}+\frac{\sum_{i=1}^{n}x_i\sum_{i=1}^{n}y_i}{N}}{\sum_{i=1}^{n}x_ix_i-2\frac{\sum_{i=1}^{n}x_i\sum_{i=1}^{n}x_i}{N}+\frac{\sum_{i=1}^{n}x_i\sum_{i=1}^{n}x_i}{N}}
 $$
 
-Somehow we get to
+Further grouping gives
 
 $$
-a=\frac{\frac{\sum{xy}}{N}-\frac{\sum{x}}{N}\frac{\sum{y}}{N}}{\frac{\sum{x^2}}{N}-(\frac{\sum{x}}{N})^2}
+a=\frac{\sum_{i=1}^{n}x_iy_i-\frac{\sum_{i=1}^{n}y_i\sum_{i=1}^{n}x_i}{N}}{\sum_{i=1}^{n}x_ix_i-\frac{\sum_{i=1}^{n}x_i\sum_{i=1}^{n}x_i}{N}}
 $$
 
-If we multiply the first terms with $$\frac{N}{N}$$ we get
+Multiplying both numerator and denominator by N gives
 
 $$
-a=\frac{\frac{N\sum{xy}}{N^2}-\frac{\sum{x}\sum{y}}{N^2}}{\frac{N\sum{x^2}}{N^2}-\frac{(\sum{x})^2}{N^2}}
+a=\frac{N\sum_{i=1}^{n}x_iy_i-\sum_{i=1}^{n}y_i\sum_{i=1}^{n}x_i}{N\sum_{i=1}^{n}x_ix_i-\sum_{i=1}^{n}x_i\sum_{i=1}^{n}x_i}
 $$
 
-Now we see that the $$N^2$$ denominators cancel eachother out and come to the following formula to calculate a
-
-$$
-a=\frac{N\sum{xy}-\sum{x}\sum{y}}{N\sum{x^2}-(\sum{x})^2}
-$$
+Which is the formula most commonly used to calculate the slope directly.
 
 Once we have a, we can calculate b since
 
