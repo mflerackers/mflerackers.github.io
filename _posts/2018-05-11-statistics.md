@@ -93,7 +93,7 @@ To calculate the correlation coefficient between the amount of light and how muc
 
 Since our correlation coefficient is nearly 1, there is a high correlation between hours of light and plant growth.
 
-## Linear regression
+## Linear regression and the regression coefficient
 
 When we have two sets of samples, we can calculate a line which follows the trend of the samples. This line visually illustrates the correlation coefficient and can be used to extrapolate or guess values for which we don't have samples.
 
@@ -153,7 +153,7 @@ $$
 a=\frac{N\sum_{i=1}^{n}x_iy_i-\sum_{i=1}^{n}y_i\sum_{i=1}^{n}x_i}{N\sum_{i=1}^{n}x_ix_i-\sum_{i=1}^{n}x_i\sum_{i=1}^{n}x_i}
 $$
 
-Which is the formula most commonly used to calculate the slope directly.
+Which is the formula most commonly used to calculate the slope without calculating covariance and variance.
 
 Once we have a, we can calculate b since
 
