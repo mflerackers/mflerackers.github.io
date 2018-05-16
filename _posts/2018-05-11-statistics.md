@@ -85,24 +85,33 @@ When we have two sets of samples, we can calculate a line which follows the tren
 A line can be defined as an equation $$y=ax+b$$, where a is the slope and b is the position where the line crosses the x axis, thus where y is 0.
 
 One way to calculate the slope a is by the dividing the covariance of x and y by the variance of x. 
+
 $$
 \frac{cov(x, y)}{var(x)}
 $$
+
 If we don't have the covariance and variance yet we can use the following formula instead
+
 $$
 a=\frac{n\sum\limits_{i=1}^{n}{x_iy_i}-\sum\limits_{i=1}^{n}{y_i}\sum\limits_{i=1}^{n}{x_i}}{n\sum\limits_{i=1}^{n}{x_i^2}-\sum\limits_{i=1}^{n}{_ix}\sum\limits_{i=1}^{n}{x_i}}
 $$
+
 Both formulas are mathematically identical, though limits with floating point values can give slightly different results.
 
 Once we have a, we can calculate b since
+
 $$
 \frac{\sum\limits_{i=1}^{n}{y_i}}{n}=a\frac{\sum\limits_{i=1}^{n}{x_i}}{n}+b
 $$
+
 We can subtract $$a\frac{\sum\limits_{i=1}^{n}{x_i}}{n}$$ from both sides to get
+
 $$
 b=\frac{\sum\limits_{i=1}^{n}{y_i}}{n}-a\frac{\sum\limits_{i=1}^{n}{x_i}}{n}
 $$
+
 or if we group the fractions
+
 $$
 b=\frac{\sum\limits_{i=1}^{n}{y_i}-a\sum\limits_{i=1}^{n}{x_i}}{n}
 $$
@@ -111,13 +120,17 @@ $$
 
 The correlation coefficient is to covariance as the standard deviation is to variance. It is a better measure to interpret results from.
 The correlation coefficient is calculated by dividing the covariance by the product of the standard deviations of each measurement.
+
 $$
 \frac{cov(x,y)}{std(x)std(y)}=\frac{\frac{\sum\limits_{i=1}^{n} (x_i-\overline{x})(y_i-\overline{y})}{n-1}}{\sqrt{\frac{\sum\limits_{i=1}^{n} (x_i-\overline{x})^2}{n-1}}\sqrt{\frac{\sum\limits_{i=1}^{n}(y_i-\overline{y})^2}{n-1}}}
 $$
+
 However if we place the square root outside, we see that correlation coefficient is equal to the product of the regression coefficient for both samples
+
 $$
 \sqrt{\frac{(\frac{\sum\limits_{i=1}^{n} (x_i-\overline{x})(y_i-\overline{y})}{n-1})^2}{\frac{\sum\limits_{i=1}^{n} (x_i-\overline{x})^2}{n-1}\frac{\sum\limits_{i=1}^{n}(y_i-\overline{y})^2}{n-1}}}
 $$
+
 If the correlation coefficient is close to 0, there is no correlation between both sets of samples. If it is close to 1, we have a direct correlation, if the value of the x sample goes up, the value of the y sample does too. If it is close to -1, we have an inverse correlation, if the sample of x goes up, the sample of y goes down.
 
 To calculate the correlation coefficient between the amount of light and how much our plants grew, we still need to calculate the standard deviation of our hours of light. The variance is 3.5 and the square root of that is 1.87. Now we can calculate the correlation coefficient as 11.2/(1.87*6.03) which is 0.99.
@@ -127,10 +140,13 @@ Since our correlation coefficient is nearly 1, there is a high correlation betwe
 ## Deriving the regression formulas
 
 Let's show that both formulas for linear regression are identical. We start with the formula for covariance of x and y over the variance of x
+
 $$
 \frac{cov(x, y)}{var(x)}
 $$
+
 or
+
 $$
 a=\frac{\frac{\sum\limits_{i=1}^{n} (x_i-\overline{x})(y_i-\overline{y})}{n-1}}{\frac{\sum\limits_{i=1}^{n} (x_i-\overline{x})^2}{n-1}}
 $$
@@ -160,6 +176,7 @@ a=\frac{\sum\limits_{i=1}^{n}x_iy_i-\overline{y}\sum\limits_{i=1}^{n}x_i-\overli
 $$
 
 Since $$\overline{x}=\frac{\sum\limits_{i=1}^{n}x_i}{n}$$ and $$\overline{y}=\frac{\sum\limits_{i=1}^{n}y_i}{n}$$
+
 $$
 a=\frac{\sum\limits_{i=1}^{n}x_iy_i-\frac{\sum\limits_{i=1}^{n}y_i}{n}\sum\limits_{i=1}^{n}x_i-\frac{\sum\limits_{i=1}^{n}x_i}{n}\sum\limits_{i=1}^{n}y_i+n\frac{\sum\limits_{i=1}^{n}x_i}{n}\frac{\sum\limits_{i=1}^{n}y_i}{n}}{\sum\limits_{i=1}^{n}x_ix_i-\frac{\sum\limits_{i=1}^{n}x_i}{n}\sum\limits_{i=1}^{n}x_i-\frac{\sum\limits_{i=1}^{n}x_i}{n}\sum\limits_{i=1}^{n}x_i+n\frac{\sum\limits_{i=1}^{n}x_i}{n}\frac{\sum\limits_{i=1}^{n}x_i}{n}}
 $$
