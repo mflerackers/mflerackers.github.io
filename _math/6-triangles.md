@@ -85,7 +85,7 @@ $$
 
 and the vertices have colors $$C_1$$, $$C_2$$ and $$C_3$$, the color C at point P is
 
-$$C=a*C_1+b*C2+c*C_3$$
+$$C=a*C_1+b*C_2+c*C_3$$
 
 The texture coordinates are interpolated across the triangle in the same way. In a game this can be used for more than just visual properties however. If our game uses triangles to define the terrain, vertices can store for example speed factors to slow down units on certain places like sand or swamp ground. By calculating the speed factor at the unit's position relative to the triangles points using barycentric coordinates, we can get smooth transitions between terrain types.
 
@@ -228,6 +228,28 @@ a^2+b^2 =c^2
 $$
 
 Unlike learning rules, this is something you can reconstruct any time you need it.
+
+## Isosceles right angled triangle
+
+A triangle where two sides are equal and the angle between these sides is 90 degrees might sound a bit too specialized, however it is quite common in games where objects are placed on a grid.
+
+If we scale this triangle so that the equal sides are of length 1, the remaining side has a length of $$\sqrt{2}$$. 
+
+$$
+c^2=1^2+1^2=2
+$$
+
+or
+
+$$
+c = \sqrt{2}
+$$
+
+This means that the side of the original unscaled triangle is $$s\sqrt{2}$$, with $$s$$ the length of one of the equal sides.
+
+Moreover, the distance from the point between the equal edges to the longest side is $$\frac{\sqrt{2}}{2}$$.
+
+This knowledge is useful in for example pathfinding when allowing traveling the diagonals. These diagonals are $$\sqrt{2}$$ units compared to crossing both a horizontal and vertical side, which is 2 units. 
 
 ### General triangle
 
