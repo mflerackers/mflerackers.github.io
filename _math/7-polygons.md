@@ -3,8 +3,7 @@ title: Polygons
 math: true
 ---
 
-[Previous - Triangles](6-triangles.html)
+| : ---- : |
+| [Previous - Triangles](6-triangles.html) | Next - Boxes |
 
-# [Math for game development](../) : Polygons
-
-## Polygons
+## Polygon definition

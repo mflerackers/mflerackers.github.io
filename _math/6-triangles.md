@@ -39,6 +39,33 @@ $$
 
 Given the three points of the triangle A, B, C, we can calculate the center of the triangle as $$\frac{A+B+C}{3}$$.
 
+```lua
+function triangleCenter(ax,ay,bx,by,cx,cy)
+    return (ax+bx+cx) / 3, (ay+by+cy) / 3
+end
+```
+
+### Triangle area
+
+The area of the triangle is equal to half the absolute value of the cross product of the vectors originating from one of the points, thus
+
+$$
+\frac{\left\lvert\vec{AB}\times\vec{AC}\right\lvert}{2}
+$$
+
+We will shortly show why this is so.
+
+```lua
+function triangleArea(ax,ay,bx,by,cx,cy)
+
+    local abx, aby = vector(ax, ay, bx, by)
+    local acx, acy = vector(ax, ay, cx, cy)
+    local z = cross(abx, aby, acx, acy)
+
+    return math.abs(z) * 0.5;
+end
+```
+
 ## Barycentric coordinates
 
 ### Concept
@@ -59,7 +86,19 @@ $$
 0.5*A+0.5*B+0*C
 $$
 
-So the barycentric coordinates of the halfway point between A and B are $$(0.5, 0.5, 0)$$. This is what we saw when we covered lines, any point between A and B can be written as $$A+t*(B-A)$$ or rewritten $$(1-t)*A+t*B$$ with t between 0 and 1. If t is not between 0 and 1, the point lies outside the line. Thus as long as the sum of the coefficients is 1, $$(1-t)+t$$, the point lies on the line.
+So the barycentric coordinates of the halfway point between A and B are $$(0.5, 0.5, 0)$$. This is what we saw when we covered lines, any point between A and B can be written as
+
+$$
+A+t*(B-A)
+$$
+
+or rewritten
+
+$$
+(1-t)*A+t*B
+$$
+
+with t between 0 and 1. If t is not between 0 and 1, the point lies outside the line. Thus as long as the sum of the coefficients is 1, $$(1-t)+t$$, the point lies on the line.
 
 Now let's take a point which lies in the middle of the triangle. Since this point can be calculated by adding all the points and dividing the sum by 3, we can write this point as
 
@@ -83,11 +122,11 @@ $$
 P=a*A+b*B+c*C
 $$
 
-and the vertices have colors $$C_1$$, $$C_2$$ and $$C_3$$, the color C at point P is
+and the vertices have colors $$C_1$$, $$C_2$$ and $$C_3$$, then the color C at point P is
 
 $$C=a*C_1+b*C_2+c*C_3$$
 
-The texture coordinates are interpolated across the triangle in the same way. In a game this can be used for more than just visual properties however. If our game uses triangles to define the terrain, vertices can store for example speed factors to slow down units on certain places like sand or swamp ground. By calculating the speed factor at the unit's position relative to the triangles points using barycentric coordinates, we can get smooth transitions between terrain types.
+The texture coordinates are interpolated across the triangle in the same way. In a game this can be used for more than just visual properties. If our game uses triangles to define the terrain, vertices can store for example speed factors to slow down units on certain places like sand or swamp ground. By calculating the speed factor at the unit's position relative to the triangles points using barycentric coordinates, we can get smooth transitions between terrain types.
 
 ### Calculation
 
@@ -98,6 +137,10 @@ function barycentricCoords(px,py,ax,ay,bx,by,cx,cy)
     local acx, acy = vector(ax, ay, cx, cy)
     local apx, apy = vector(ax, ay, px, py)
     local denom = cross(abx, aby, acx, acy)
+
+    -- Triangle has an area of 0
+    if denom < 0.0001 and denom > -0.0001 then return false end
+
     local numer = cross(abx, aby, apx, apy)
     local c = numer / denom
     
@@ -116,7 +159,7 @@ end
 If we know that the barycentric coordinates are all within 0 and 1, and their sum is not greater than 1, we can say that the point is within the triangle.
 
 ```lua
-function pointInTriangle2(px,py,ax,ay,bx,by,cx,cy)
+function pointInTriangle(px,py,ax,ay,bx,by,cx,cy)
 
     -- Check ABxAP relative to ABxAC
     local abx, aby = vector(ax, ay, bx, by)
@@ -124,6 +167,7 @@ function pointInTriangle2(px,py,ax,ay,bx,by,cx,cy)
     local apx, apy = vector(ax, ay, px, py)
     local denom = cross(abx, aby, acx, acy)
 
+    -- Triangle has an area of 0
     if denom < 0.0001 and denom > -0.0001 then return false end
 
     local numer = cross(abx, aby, apx, apy)
@@ -181,6 +225,24 @@ local function pointInTriangle(px,py,ax,ay,bx,by,cx,cy)
 end
 ```
 
+Of course if we know the winding order of the triangle, we can simplify this to only three cross products, as we know which sign to check for.
+
+```lua
+local function pointInTriangle(px,py,ax,ay,bx,by,cx,cy)
+    -- Assumes Y axis is down and triangles have clockwise winding order
+    local abx, aby = vector(ax, ay, bx, by)
+    local bcx, bcy = vector(bx, by, cx, cy)
+    local cax, cay = vector(cx, cy, ax, ay)
+    local apx, apy = vector(ax, ay, px, py)
+    local bpx, bpy = vector(bx, by, px, py)
+    local cpx, cpy = vector(cx, cy, px, py)
+    
+    return cross(abx, aby, apx, apy) >= 0 &&
+           cross(bcx, bcy, bpx, bpy) >= 0 &&
+           cross(cax, cay, cpx, cpy) >= 0
+end
+```
+
 ## Triangle equations
 
 ### Right-angled triangle
@@ -195,18 +257,18 @@ Then we scale it so that the length of c is 1.
 
 ![rotate_scale_triangle](/assets/rotate_scale_triangle.png)
 
-We can see that if the length of c was 1, then a would be equal to the cosine, while b would be equal to the sine. Since c in most situations is not 1, we need to scale the cosine and sine by the length of c, thus
+We can see that if the length of c was 1, then b would be equal to the cosine, while a would be equal to the sine. Since c in most situations is not 1, we need to scale the cosine and sine by the length of c, thus
 
 $$
-a=c*cos(\alpha)\\
-b=c*sin(\alpha)
+b=c*cos(\alpha)\\
+a=c*sin(\alpha)
 $$
 
 That's all there is to it. Don't have $$\alpha$$ but $$\beta$$? Just turn the triangle, or use $$\alpha=90-\beta$$, since the sum of the angles is 180 degrees and one of them is 90. Don't have c? Just divide both sides of the equation by cosine and sine respectively.
 
 $$
-c=\frac{a}{cos(\alpha)} \\
-c=\frac{b}{sin(\alpha)}
+c=\frac{b}{cos(\alpha)} \\
+c=\frac{a}{sin(\alpha)}
 $$
 
 Also since we know that $$cos(\alpha)^2+sin(\alpha)^2 =1$$, since the dot product of the vector with itself gives us its squared length, which is equal to 1, we can write
@@ -229,7 +291,7 @@ $$
 
 Unlike learning rules, this is something you can reconstruct any time you need it.
 
-## Isosceles right angled triangle
+### Isosceles right angled triangle
 
 A triangle where two sides are equal and the angle between these sides is 90 degrees might sound a bit too specialized, however it is quite common in games where objects are placed on a grid.
 
@@ -254,3 +316,43 @@ This knowledge is useful in for example pathfinding when allowing traveling the 
 ### General triangle
 
 If the triangle is not right-angled, it can be split in two right-angled triangles which you can solve separately. You can use vector projection to find a point on an edge opposite to the third point and create a new edge perpendicular to the edge.
+
+## Deriving the area of a triangle formula
+
+If we take the triangle, and double it across an edge, we get a parallelogram.
+
+![triangle_area_1](/assets/triangle_area_1.png)
+
+From the parallelogram, we can cut of a right angled triangle in order to construct a rectangle.
+
+![triangle_area_2](/assets/triangle_area_2.png)
+
+Since the area of the rectangle is width times height, thus $$\left\lVert\vec{AC}\right\lVert*H$$, we can calculate the area if we have the height or H of the parallelogram. We know, since we have a right angled triangle, that
+
+$$
+H=sin(\alpha)*\left\lVert\vec{AB}\right\lVert
+$$
+
+So the area is equal to
+
+$$
+sin(\alpha)*\left\lVert\vec{AB}\right\lVert*\left\lVert\vec{AC}\right\lVert
+$$
+
+Remember that the cross product of two vectors is equal to the product of the lengths of the vectors multiplied by the sine of the angle between the vectors, thus
+
+$$
+\vec{AB}\times\vec{AC}=sin(\alpha)*\left\lVert\vec{AB}\right\lVert*\left\lVert\vec{AC}\right\lVert
+$$
+
+Since the triangle is only half the parallelogram, we need to divide by two
+
+$$
+\frac{\vec{AB}\times\vec{AC}}{2}
+$$
+
+And since a cross product's sign depends on the order of the vectors, it might be negative depending on the triangle's winding order, thus we need to take the absolute value
+
+$$
+\frac{\left\lvert\vec{AB}\times\vec{AC}\right\lvert}{2}
+$$
