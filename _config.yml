@@ -1,4 +1,4 @@
-theme: minimal-mistakes-jekyll
+remote_theme: "mmistakes/minimal-mistakes"
 title: fromatogra
 name: Marc Flerackers
 description: Software and mathematics
