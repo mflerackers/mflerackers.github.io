@@ -1,12 +1,10 @@
 ---
-layout: default
 title: Points and Vectors
 math: true
 ---
 
-[Next - Angles](2-angles.html)
-
-# [Math for game development](../) : Points and Vectors
+| : ---- : |
+| [Previous - Foreword](0-foreword.html) | [Next - Angles](2-angles.html) |
 
 ## Scalars
 

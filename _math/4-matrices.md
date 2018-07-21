@@ -1,5 +1,4 @@
 ---
-layout: default
 title: Transformations as matrices
 math: true
 ---
@@ -7,9 +6,7 @@ math: true
 | : ---- : |
 | [Previous - Vector projection](3-vector-projection.html) | [Next - Lines](5-lines.html) |
 
-# [Math for game development](../) : Transformations as matrices
-
-# Transformations as matrices
+## Why use matrices
 
 Matrices are not a requirement for transforming positions or geometry. Often it is more efficient to build the needed formulas like we did, as allocating, building and multiplying matrices does not come cheap. Where matrices are most handy is when we have an hierarchy of components where a parent component influences the transformation of a child component. In that situation matrices are an indispensable tool.
 All the formulas presented here use the OpenGL conventions. This means we will post-multiply matrices and vectors. If for some reason you need matrices for pre-multiplication instead, you only need to transpose the given matrices.
@@ -75,7 +72,7 @@ $$y'=(d, e, f).(x, y, w)$$
 
 $$w'=(g, h, i).(x, y, w)$$
 
-We are not going to use general matrices, but are going to focus on linear transformations. In our case, the last row of a matrix {g, h, i} is always {0, 0, 1} so we never need to store this row, and it's values can be hard coded into multiplication formula.
+We are not going to use general matrices, but are going to focus on linear transformations. In our case, the last row of a matrix {g, h, i} is always {0, 0, 1} so we never need to store this row, and it's values can be hard coded into the multiplication formula.
 
 $$x'=x*a+y*b+w*c$$ 
 
@@ -148,7 +145,7 @@ sin(\alpha) & cos(\alpha) & 0 \\
 
 $$x'=x*cos(\alpha)-y*sin(\alpha)+0=x*cos(\alpha)-y*sin(\alpha)$$
 
-$$y'=x*sin()\alpha+y*cos(\alpha)+0=x*sin()\alpha+y*cos(\alpha)$$
+$$y'=x*sin(\alpha)+y*cos(\alpha)+0=x*sin(\alpha)+y*cos(\alpha)$$
 
 This is the formula we derived in angles, rotating around the origin.
 
@@ -268,7 +265,7 @@ $$x'=s_x*(x-t_x)+t_x$$
 
 $$y'=s_y*(y-t_y)+t_y$$
 
-This formula is of course several magnitudes more efficient than allocating, building and multiplying these three matrices. Only when we don't know in advance what combination of transformations we are going to have to do, does it make sense to switch to matrices.
+This formula is of course several magnitudes more efficient than allocating, building and multiplying these three matrices. Only when we don't know in advance what combination of transformations we are going to have, does it make sense to switch to matrices.
 
 ## Transforming matrices
 
