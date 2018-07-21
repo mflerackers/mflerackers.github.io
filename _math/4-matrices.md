@@ -72,7 +72,7 @@ $$y'=(d, e, f).(x, y, w)$$
 
 $$w'=(g, h, i).(x, y, w)$$
 
-We are not going to use general matrices, but are going to focus on linear transformations. In our case, the last row of a matrix {g, h, i} is always {0, 0, 1} so we never need to store this row, and it's values can be hard coded into multiplication formula.
+We are not going to use general matrices, but are going to focus on linear transformations. In our case, the last row of a matrix {g, h, i} is always {0, 0, 1} so we never need to store this row, and it's values can be hard coded into the multiplication formula.
 
 $$x'=x*a+y*b+w*c$$ 
 
@@ -145,7 +145,7 @@ sin(\alpha) & cos(\alpha) & 0 \\
 
 $$x'=x*cos(\alpha)-y*sin(\alpha)+0=x*cos(\alpha)-y*sin(\alpha)$$
 
-$$y'=x*sin()\alpha+y*cos(\alpha)+0=x*sin()\alpha+y*cos(\alpha)$$
+$$y'=x*sin(\alpha)+y*cos(\alpha)+0=x*sin(\alpha)+y*cos(\alpha)$$
 
 This is the formula we derived in angles, rotating around the origin.
 
@@ -265,7 +265,7 @@ $$x'=s_x*(x-t_x)+t_x$$
 
 $$y'=s_y*(y-t_y)+t_y$$
 
-This formula is of course several magnitudes more efficient than allocating, building and multiplying these three matrices. Only when we don't know in advance what combination of transformations we are going to have to do, does it make sense to switch to matrices.
+This formula is of course several magnitudes more efficient than allocating, building and multiplying these three matrices. Only when we don't know in advance what combination of transformations we are going to have, does it make sense to switch to matrices.
 
 ## Transforming matrices
 

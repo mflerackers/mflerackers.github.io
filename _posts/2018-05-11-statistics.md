@@ -26,7 +26,9 @@ $$
 \overline{x}=\frac{\sum\limits_{i=1}^{n} x_i}{n}
 $$
 
-In case we only have samples, rather than a population, we need to divide by $$n-1$$ instead of $$n$$.
+This is the population mean
+
+In case we only have samples, rather than a complete population, we need to divide by $$n-1$$ instead of $$n$$.
 
 $$
 \overline{x}=\frac{\sum\limits_{i=1}^{n} x_i}{n-1}
@@ -84,11 +86,13 @@ When we have two sets of samples, we can calculate a line which follows the tren
 
 A line can be defined as an equation $$y=ax+b$$, where a is the slope and b is the position where the line crosses the x axis, thus where y is 0.
 
-One way to calculate the slope a is by the dividing the covariance of x and y by the variance of x. 
+One way to calculate the slope a is by the dividing the covariance of x and y by the variance of x.
 
 $$
 \frac{cov(x, y)}{var(x)}
 $$
+
+This is called the regression coefficient.
 
 If we don't have the covariance and variance yet we can use the following formula instead
 
@@ -116,7 +120,7 @@ $$
 b=\frac{\sum\limits_{i=1}^{n}{y_i}-a\sum\limits_{i=1}^{n}{x_i}}{n}
 $$
 
-## R
+## The correlation coefficient R
 
 The correlation coefficient is to covariance as the standard deviation is to variance. It is a better measure to interpret results from.
 The correlation coefficient is calculated by dividing the covariance by the product of the standard deviations of each measurement.
@@ -125,10 +129,10 @@ $$
 \frac{cov(x,y)}{std(x)std(y)}=\frac{\frac{\sum\limits_{i=1}^{n} (x_i-\overline{x})(y_i-\overline{y})}{n-1}}{\sqrt{\frac{\sum\limits_{i=1}^{n} (x_i-\overline{x})^2}{n-1}}\sqrt{\frac{\sum\limits_{i=1}^{n}(y_i-\overline{y})^2}{n-1}}}
 $$
 
-However if we place the square root outside, we see that correlation coefficient is equal to the product of the regression coefficient for both samples
+However if we place the square root outside, we see that correlation coefficient is equal to the square root of the product of the regression coefficients for both samples
 
 $$
-\sqrt{\frac{(\frac{\sum\limits_{i=1}^{n} (x_i-\overline{x})(y_i-\overline{y})}{n-1})^2}{\frac{\sum\limits_{i=1}^{n} (x_i-\overline{x})^2}{n-1}\frac{\sum\limits_{i=1}^{n}(y_i-\overline{y})^2}{n-1}}}
+\sqrt{\frac{(\frac{\sum\limits_{i=1}^{n} (x_i-\overline{x})(y_i-\overline{y})}{n-1})^2}{\frac{\sum\limits_{i=1}^{n} (x_i-\overline{x})^2}{n-1}\frac{\sum\limits_{i=1}^{n}(y_i-\overline{y})^2}{n-1}}}=\sqrt{\frac{cov(x,y)^2}{var(x)var(y)}}
 $$
 
 If the correlation coefficient is close to 0, there is no correlation between both sets of samples. If it is close to 1, we have a direct correlation, if the value of the x sample goes up, the value of the y sample does too. If it is close to -1, we have an inverse correlation, if the sample of x goes up, the sample of y goes down.
@@ -136,6 +140,86 @@ If the correlation coefficient is close to 0, there is no correlation between bo
 To calculate the correlation coefficient between the amount of light and how much our plants grew, we still need to calculate the standard deviation of our hours of light. The variance is 3.5 and the square root of that is 1.87. Now we can calculate the correlation coefficient as 11.2/(1.87*6.03) which is 0.99.
 
 Since our correlation coefficient is nearly 1, there is a high correlation between hours of light and plant growth.
+
+## Covariance matrix
+
+The covariance matrix is a matrix which contains all covariances between each two parameters. If we would build a covariance matrix between just two parameters x and y, like our light and plant growth  parameters, we would get the matrix
+
+$$
+\begin{bmatrix}cov(x, x) & cov(x, y) \\ cov(y, x) & cov(y,y)\end{bmatrix}
+$$
+
+Of course the covariance between two identical parameters is the variance, so we can write
+
+$$
+\begin{bmatrix}var(x) & cov(x, y) \\ cov(y, x) & var(y)\end{bmatrix}
+$$
+
+And since the covariance of x and y is equal to the covariance of y and x, the matrix is symmetric .
+
+The more parameters we have, the larger the matrix will be as it needs to cover more combinations
+
+$$
+\begin{bmatrix}var(x) & cov(x, y) & cov(x, z) & ..\\ cov(y, x) & var(y) & cov(y,z) & ..\\cov(z,x) & cov(z,y) & var(z) & ..\\ .. & .. & .. & ..\end{bmatrix}
+$$
+
+We will shortly see why we are interested in this matrix, but before that we will recreate it using matrix math. While it is completely OK to create it using the methods we used before, and even more logical as we only need to calculate one of two symmetric triangles, matrix operations might be faster depending on the hardware used.
+
+The steps are as follows. We start with an nxm matrix in which each each row defines a sample from 1 to n and each column defines a parameter from 1 to m
+
+$$
+\begin{bmatrix}x_1 & y_1 & z_1 & ..\\ x_2 & y_2 & z_2 & ..\\x_3 & y_3 & z_3 & ..\\ .. & .. & .. & ..\end{bmatrix}
+$$
+
+We multiply this matrix with a nxn matrix of ones
+
+$$
+\begin{bmatrix}1 & 1 & 1 & ..\\ 1 & 1 & 1 & ..\\1 & 1 & 1 & ..\\ .. & .. & .. & ..\end{bmatrix} * \begin{bmatrix}x_1 & y_1 & z_1 & ..\\ x_2 & y_2 & z_2 & ..\\x_3 & y_3 & z_3 & ..\\ .. & .. & .. & ..\end{bmatrix}=\begin{bmatrix}\sum\limits_{i=1}^{n}{x_i} & \sum\limits_{i=1}^{n}{y_i} & \sum\limits_{i=1}^{n}{z_i} & ..\\ \sum\limits_{i=1}^{n}{x_i} & \sum\limits_{i=1}^{n}{y_i} & \sum\limits_{i=1}^{n}{z_i} & ..\\\sum\limits_{i=1}^{n}{x_i} & \sum\limits_{i=1}^{n}{y_i} & \sum\limits_{i=1}^{n}{z_i} & ..\\ .. & .. & .. & ..\end{bmatrix}
+$$
+
+The result is that each column, from 1 to m will contain n rows, which all contain the sum of all sample values for that parameter. Then we divide by the amount of samples to get
+
+$$
+\begin{bmatrix}\sum\limits_{i=1}^{n}{x_i} & \sum\limits_{i=1}^{n}{y_i} & \sum\limits_{i=1}^{n}{z_i} & ..\\ \sum\limits_{i=1}^{n}{x_i} & \sum\limits_{i=1}^{n}{y_i} & \sum\limits_{i=1}^{n}{z_i} & ..\\\sum\limits_{i=1}^{n}{x_i} & \sum\limits_{i=1}^{n}{y_i} & \sum\limits_{i=1}^{n}{z_i} & ..\\ .. & .. & .. & ..\end{bmatrix}*\frac{1}{n}=\begin{bmatrix}\frac{\sum\limits_{i=1}^{n}{x_i}}{n} & \frac{\sum\limits_{i=1}^{n}{y_i}}{n} & \frac{\sum\limits_{i=1}^{n}{z_i}}{n} & ..\\ \frac{\sum\limits_{i=1}^{n}{x_i}}{n} & \frac{\sum\limits_{i=1}^{n}{y_i}}{n} & \frac{\sum\limits_{i=1}^{n}{z_i}}{n} & ..\\ \frac{\sum\limits_{i=1}^{n}{x_i}}{n} & \frac{\sum\limits_{i=1}^{n}{y_i}}{n} & \frac{\sum\limits_{i=1}^{n}{z_i}}{n} & ..\\ .. & .. & .. & ..\end{bmatrix}=\begin{bmatrix}\overline{x} & \overline{y} & \overline{z} & ..\\ \overline{x} & \overline{y} & \overline{z} & ..\\ \overline{x} & \overline{y} & \overline{z} & ..\\ .. & .. & .. & ..\end{bmatrix}
+$$
+
+This is a matrix which contains in every column for every row the mean of the samples. We subtract this from our original sample matrix to get the sample value minus the mean.
+
+$$
+\begin{bmatrix}x_1 & y_1 & z_1 & ..\\ x_2 & y_2 & z_2 & ..\\x_3 & y_3 & z_3 & ..\\ .. & .. & .. & ..\end{bmatrix}-\begin{bmatrix}\overline{x} & \overline{y} & \overline{z} & ..\\ \overline{x} & \overline{y} & \overline{z} & ..\\ \overline{x} & \overline{y} & \overline{z} & ..\\ .. & .. & .. & ..\end{bmatrix}=\begin{bmatrix}x_1-\overline{x} & y_1-\overline{y} & z_1-\overline{z} & ..\\ x_2-\overline{x} & y_2-\overline{y} & z_2-\overline{z} & ..\\x_3-\overline{x} & y_3-\overline{y} & z_3-\overline{z} & ..\\ .. & .. & .. & ..\end{bmatrix}
+$$
+
+To get the sum of squares, we multiply the transpose of this matrix with itself
+
+$$
+\begin{bmatrix}x_1-\overline{x} & x_2-\overline{x} & x_3-\overline{x} & ..\\ y_1-\overline{y} & y_2-\overline{y} & y_3-\overline{y} & ..\\z_1-\overline{z} & z_2-\overline{z} & z_3-\overline{z} & ..\\ .. & .. & .. & ..\end{bmatrix}*\begin{bmatrix}x_1-\overline{x} & y_1-\overline{y} & z_1-\overline{z} & ..\\ x_2-\overline{x} & y_2-\overline{y} & z_2-\overline{z} & ..\\x_3-\overline{x} & y_3-\overline{y} & z_3-\overline{z} & ..\\ .. & .. & .. & ..\end{bmatrix}
+$$
+
+This gives us
+
+$$
+\begin{bmatrix}\sum\limits_{i=1}^{n}{(x_i-\overline{x})^2} & \sum\limits_{i=1}^{n}{(x_i-\overline{x})(y_i-\overline{y})} & \sum\limits_{i=1}^{n}{(x_i-\overline{x})(z_i-\overline{z})} & ..\\ \sum\limits_{i=1}^{n}{(y_i-\overline{y})(x_i-\overline{x})} & \sum\limits_{i=1}^{n}{(y_i-\overline{y})^2} & \sum\limits_{i=1}^{n}{(y_i-\overline{y})(z_i-\overline{z})} & ..\\ \sum\limits_{i=1}^{n}{(z_i-\overline{z})(x_i-\overline{x})} & \sum\limits_{i=1}^{n}{(z_i-\overline{z})(y_i-\overline{y})} & \sum\limits_{i=1}^{n}{(z_i-\overline{z})^2} & ..\\ .. & .. & .. & ..\end{bmatrix}
+$$
+
+Which we can divide by the amount of samples minus 1 to get
+
+$$
+\begin{bmatrix}\frac{\sum\limits_{i=1}^{n}{(x_i-\overline{x})^2}}{n-1} & \frac{\sum\limits_{i=1}^{n}{(x_i-\overline{x})(y_i-\overline{y})}}{n-1} & \frac{\sum\limits_{i=1}^{n}{(x_i-\overline{x})(z_i-\overline{z})}}{n-1} & ..\\ \frac{\sum\limits_{i=1}^{n}{(y_i-\overline{y})(x_i-\overline{x})}}{n-1} & \frac{\sum\limits_{i=1}^{n}{(y_i-\overline{y})^2}}{n-1} & \frac{\sum\limits_{i=1}^{n}{(y_i-\overline{y})(z_i-\overline{z})}}{n-1} & ..\\ \frac{\sum\limits_{i=1}^{n}{(z_i-\overline{z})(x_i-\overline{x})}}{n-1} & \frac{\sum\limits_{i=1}^{n}{(z_i-\overline{z})(y_i-\overline{y})}}{n-1} & \frac{\sum\limits_{i=1}^{n}{(z_i-\overline{z})^2}}{n-1} & ..\\ .. & .. & .. & ..\end{bmatrix}
+$$
+
+Which is the covariance matrix.
+
+On the diagonal we can see how much ever paramater varies among samples, and the off-diagonal elements show how much relationship there is between parameters.
+
+## Principal Component Analysis or PCA
+
+When we have many parameters per sample, we can find which parameters or parameter groups cause the most change by using principal component analysis.
+
+To do a principal component analysis we take the covariance matrix. For this matrix we search for the eigenvectors and the corresponding eigenvalues. The eigenvectors with the largest eigenvalues indicate which parameters work together to influence the most change.
+
+Eigenvectors are vectors which don't change direction when transformed by the matrix. Eigenvalues are the scale factors by which the eigenvectors are scaled when transformed by the matrix.
+
+[More content coming soon]
 
 ## Deriving the regression formulas
 
@@ -200,4 +284,3 @@ a=\frac{n\sum\limits_{i=1}^{n}x_iy_i-\sum\limits_{i=1}^{n}y_i\sum\limits_{i=1}^{
 $$
 
 Which is the formula we were aiming for.
-
