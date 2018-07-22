@@ -1,6 +1,7 @@
 ---
 title: Points and Vectors
 math: true
+excerpt: "What are points and vectors mathematically, where do they differ and how are they connected."
 ---
 
 | : ---- : |

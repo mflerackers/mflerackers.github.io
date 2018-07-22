@@ -1,6 +1,7 @@
 ---
 title: Transformations as matrices
 math: true
+excerpt: "How and when do we use matrices. An explanation of the most common uses of matrices to do transformations."
 ---
 
 | : ---- : |
