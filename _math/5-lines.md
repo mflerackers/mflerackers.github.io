@@ -1,6 +1,7 @@
 ---
 title: Lines
 math: true
+excerpt: "Lines, rays and line segments. How to know if a point is on a line. How to find the intersection of two lines, rays or line segments."
 ---
 
 | : ---- : |

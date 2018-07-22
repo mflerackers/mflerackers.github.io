@@ -1,6 +1,7 @@
 ---
 title: Triangles
 math: true
+excerpt: "What is the winding order of a triangle. How to determine the area. How to interpolate over a triangle and how to know whether a points lies in a triangle."
 ---
 
 | : ---- : |

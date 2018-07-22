@@ -1,6 +1,7 @@
 ---
 title: Vector projection
 math: true
+excerpt: "How can we project a point onto a vector."
 ---
 
 | : ---- : |

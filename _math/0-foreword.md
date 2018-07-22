@@ -1,6 +1,7 @@
 ---
 title: Foreword
 math: true
+excerpt: "Why I am writing this book on every mathematical formula and technique used in game development."
 ---
 
 | : ---- : |

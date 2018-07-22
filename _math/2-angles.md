@@ -1,6 +1,7 @@
 ---
 title: Angles
 math: true
+excerpt: "How do we go from vectors to angles and back. What is PI, cosine and sine exactly, and how can they help us to rotate points."
 ---
 
 | : ---- : |

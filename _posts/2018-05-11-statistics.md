@@ -3,6 +3,7 @@ layout: single
 title:  "Introduction to statistics"
 date:   2018-05-11 22:03:01 +0900
 categories: math
+excerpt: "A short introduction to statistical entities and how to use them. From mean to principal component analysis."
 ---
 
 ## Our data set
