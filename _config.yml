@@ -24,7 +24,7 @@ author:
   email  : # optional
   uri    : "http://fromatogra.com"
   home   : # null (default), "absolute or relative url to link to author home"
-  twitter : mflerackers@gmail.com
+  twitter : mflerackers
 collections:
   math:
     output: true
