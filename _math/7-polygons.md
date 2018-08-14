@@ -91,13 +91,17 @@ $$
 Where n+1 wraps back to 1. When we write out this formula for our triangle we get
 
 $$
-(x_2+x_1)(y_2-y_1) + (x_3+x_2)(y_3-y_2) + (x_1+x_3)(y_1-y_3)
+(x_2+x_1)(y_2-y_1) + \\
+(x_3+x_2)(y_3-y_2) + \\
+(x_1+x_3)(y_1-y_3)
 $$
 
 Writing this out gives
 
 $$
-x_2y_2 - x_2y_1 + x_1y_2 - x_1y_1 + x_3y_3 - x_3y_2 + x_2y_3 - x_2y_2 + x_1y_1 - x_1y_3 + x_3y_1 - x_3y_3
+x_2y_2 - x_2y_1 + x_1y_2 - x_1y_1 + \\
+x_3y_3 - x_3y_2 + x_2y_3 - x_2y_2 + \\
+x_1y_1 - x_1y_3 + x_3y_1 - x_3y_3
 $$
 
 Eliminating opposing pairs gives us
@@ -170,9 +174,27 @@ Drag the vertices below to see how the cross product of adjacent edges changes d
 <p data-height="400" data-theme-id="0" data-slug-hash="ajPWYK" data-default-tab="result" data-user="mflerackers" data-pen-title="Convex or concave" class="codepen">See the Pen <a href="https://codepen.io/mflerackers/pen/ajPWYK/">Convex or concave</a> by Marc (<a href="https://codepen.io/mflerackers">@mflerackers</a>) on <a href="https://codepen.io">CodePen</a>.</p>
 <script async src="https://static.codepen.io/assets/embed/ei.js"></script>
 
+## Polygon center
+
+Just like the triangle center, we take the sum of all points and divide by how many there are.
+
+```lua
+function polygonCenter(points)
+  local centerX, centerY = points[1], points[2]
+  for i=3, #points, 2 do
+    centerX = centerX + points[i]
+    centerY = centerY + points[i+1]
+  end
+  local count = #points / 2
+  centerX = centerX / count
+  centerY = centerY / count
+  return centerX, centerY
+end
+```
+
 ## Point in polygon
 
-One of the ways to check whether a point lies within a polygon is using the same method as we used with triangles, we look at the sign of cross products. However that are a lot of cross products when our polygon contains more than a few points. Of course, if we know the winding order and that the polygon is convex, we can reduce the amount of cross products. But since we want a general solution, we're going to look at a faster way of doing it for all polygons.
+One of the ways to check whether a point lies within a polygon is using the same method as we used with triangles, we look at the sign of cross products. However that are a lot of cross products when our polygon contains more than a few points. Of course, if we know the winding order and that the polygon is convex, we can reduce the amount of cross products. But since we want a general solution, we're going to look at a faster way of doing it for all polygons. This method is courtesy of [W. Randolph Franklin](https://wrf.ecse.rpi.edu//Research/Short_Notes/pnpoly.html).
 
 We still do a check for every edge, but we only look for edges which cross our y coordinate. When they do, we find the x coordinate on the edge and check whether it is larger than our x. The idea is that we count how many crossings of edges lie on the right side. If it is odd, we are inside the polygon, if it is even, we are outside the polygon.
 
@@ -350,8 +372,6 @@ function polygonsCollideV(points1, points2)
 end
 ```
 
-Note that unlike before, we normalize the vectors, this is because otherwise we need to scale the radius of the circle into normal space, to be able to compare it with the other projections in normal space. To avoid this, we use a normalized vector, which doesn't cost us more, as the alternative is to multiply the radius with the squared length of the vector and dividing it by the length of the vector.
-
 You can see how it works below. The green line is the vector from the center of the static polygon towards the displaced polygon. The red line is the vector which will move the displaced polygon away from the static polygon.
 
 <p data-height="420" data-theme-id="0" data-slug-hash="VBgOeQ" data-default-tab="result" data-user="mflerackers" data-pen-title="Polygon collision resolution" class="codepen">See the Pen <a href="https://codepen.io/mflerackers/pen/VBgOeQ/">Polygon collision resolution</a> by Marc (<a href="https://codepen.io/mflerackers">@mflerackers</a>) on <a href="https://codepen.io">CodePen</a>.</p>
@@ -368,6 +388,80 @@ Projecting the circle is very simple, we only project the center point, and subt
 But what normal should we use? There are an infinite number of normals for a circle, and still far too many in an approximation.
 
 We are in luck again, as the only axis we need to test for is the one defined by the center of the circle and the closest point in the polygon.
+
+Note that unlike before, we normalize the normals, this is because otherwise we need to scale the radius of the circle into normal space, to be able to compare it with the other projections in normal space. To avoid this, we use a normalized vector, which doesn't cost us more, as the alternative is to multiply the radius with the squared length of the vector and dividing it by the length of the vector.
+
+```lua
+function projectCircle(cx, cy, radius, x, y, nx, ny)
+  local s = (cx-x)*nx + (cy-y)*ny;
+  return s - radius, s + radius;
+end
+
+function polygonCircleCollideV(points, cx, cy, radius)
+  -- We project both polygons on all normals of polygon 1
+  local x1, y1 = points[#points-1], points[#points]
+  local x2, y2 = points[1], points[2]
+  local nx, ny, min1, max1, min2, max2
+  local overlap, smallestOverlap, length, overlapX, overlapY
+  -- For every edge of points
+  for i = 1, #points, 2 do
+    -- Get edge normal by rotating the vector [x2-x1, y2-y1] by 90 degrees
+    nx, ny = y2-y1, x1-x2
+    length = nx*nx+ny*ny
+    length = math.sqrt(length);
+    nx = nx / length
+    ny = ny / length
+    -- Project both polygons onto the normal
+    min1, max1 = projectPolygon(points, x2, y1, nx, ny)
+    min2, max2 = projectCircle(cx, cy, radius, x2, y1, nx, ny)
+    -- If there is no overlap between the ranges, there is no collision
+    if max1 <= min2 or min1 >= max2 then
+      return false
+    end
+    overlap = math.min(max1, max2) - math.max(min1, min2)
+    -- Record smallest overlap
+    if not smallestOverlap or overlap < smallestOverlap then
+      smallestOverlap = overlap
+      overlapX = nx*overlap
+      overlapY = ny*overlap
+    end
+    x1, y1 = x2, y2
+    x2, y2 = points[i+2], points[i+3]
+  end
+  -- For the axis from the circle center to the nearest point
+  local index = 1
+  local nearest = cx*points[1]+cy*points[2]
+  local distance
+  for i = 3, #points, 2 do
+    distance = cx*points[i]+cy*points[i+1]
+    if distance < nearest then
+      index = i
+      nearest = distance
+    end
+  end
+  local px, py = points[index], points[index+1]
+  nx, ny = cx-px, cy-py
+  length = nx*nx+ny*ny
+  length = math.sqrt(length)
+  nx = nx / length
+  ny = ny / length
+  -- Project both polygons onto the normal
+  min1, max1 = projectPolygon(points, px, py, nx, ny)
+  min2, max2 = projectCircle(cx, cy, radius, px, py, nx, ny)
+  -- If there is no overlap between the ranges, there is no collision
+  if max1 <= min2 or min1 >= max2 then
+    return false
+  end
+  overlap = math.min(max1, max2) - math.max(min1, min2)
+  -- Record smallest overlap
+  if overlap < smallestOverlap then
+    smallestOverlap = overlap
+    overlapX = nx*overlap
+    overlapY = ny*overlap
+  end
+  return smallestOverlap, overlapX, overlapY
+end
+```
 
 You can test the result below by dragging the circle towards the polygon. The additional circle axis comes into play when the circle is close to one of the vertices. Not that if the circle is too deep into the polygon, it needs several steps to get pushed out of it. This is because the maximum overlap, and thus displacement, will be the diameter of the circle.
 
