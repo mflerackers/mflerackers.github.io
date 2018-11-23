@@ -5,7 +5,7 @@ excerpt: "What is the winding order of a triangle. How to determine the area. Ho
 ---
 
 | : ---- : |
-| [Previous - Lines](5-lines.html) | Next - Polygons |
+| [Previous - Lines](5-lines.html) | [Next - Polygons](7-polygons.html) |
 
 ## Triangle definition
 
