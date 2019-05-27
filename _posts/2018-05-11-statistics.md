@@ -121,7 +121,7 @@ $$
 b=\frac{\sum\limits_{i=1}^{n}{y_i}-a\sum\limits_{i=1}^{n}{x_i}}{n}
 $$
 
-## The correlation coefficient R
+## The Pearson correlation coefficient R
 
 The correlation coefficient is to covariance as the standard deviation is to variance. It is a better measure to interpret results from.
 The correlation coefficient is calculated by dividing the covariance by the product of the standard deviations of each measurement.
@@ -221,6 +221,48 @@ To do a principal component analysis we take the covariance matrix. For this mat
 Eigenvectors are vectors which don't change direction when transformed by the matrix. Eigenvalues are the scale factors by which the eigenvectors are scaled when transformed by the matrix.
 
 [More content coming soon]
+
+## Spearman's rank correlation coefficient
+
+When the data we use is nonparametric, thus does not rely on numbers but rather an order, we can use Spearman's rank correlation coefficient instead of the Pearson correlation coefficient.
+
+The Spearman's rank correlation coefficient is obtained by calculating the rank of every value, and then by using these values to calculate the Pearson correlation coefficient.
+
+There are several methods to calculate the rank of a list of values. The simplest method is to sort the values in ascending or descending order and to assign the values numbers from 1 until n, the amount of values. However if a value appears more than once, all these duplicates are assigned the rank of the first duplicate, while the numbering keeps going up silently So when a new unique value is encountered, the numbering jumps.
+
+| Value        | Rank        |
+| -------------| ----------- |
+| 2            | 1           |
+| 3            | 2           |
+| 4            | 3           |
+| 4            | 3           |
+| 4            | 3           |
+| 5            | 6           |
+
+Every value 4 receives rank 3. Rank 4 and 5 are skipped here, while value 5 receives the next rank, rank 6.
+
+Alternatively the duplicates can be assigned the average of their lowest and highest rank.
+
+| Value        | Rank        |
+| -------------| ----------- |
+| 2            | 1           |
+| 3            | 2           |
+| 4            | 4           |
+| 4            | 4           |
+| 4            | 4           |
+| 5            | 6           |
+
+The values 4 would have received rank 3, 4 and 5. The average of 3 and 5 is 4, so all values receive rank 4.
+
+Now that we can calculate the rank of a list of values, using
+
+$$
+\frac{cov(x',y')}{std(x')std(y')}
+$$
+
+Where $$x'$$ is the list of values obtained by replacing each value in $$x$$ by its rank.
+
+## Significance of the correlation coefficient
 
 ## Deriving the regression formulas
 
