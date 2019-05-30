@@ -222,13 +222,19 @@ Eigenvectors are vectors which don't change direction when transformed by the ma
 
 [More content coming soon]
 
-## Spearman's rank correlation coefficient
+## Nonparametric data
 
-When the data we use is nonparametric, thus does not rely on numbers but rather an order, we can use Spearman's rank correlation coefficient instead of the Pearson correlation coefficient.
+In a lot of cases, we don't only have numbers, but categories as well. This can happen when we place measurable values into buckets, like [low, medium, high] or when we have distinct possibilities which are not necessarily ordered, like [red, green, blue, yellow].
+
+### Spearman's rank correlation coefficient
+
+When the data we use is nonparametric, but still has a certain order, we can use Spearman's rank correlation coefficient instead of the Pearson correlation coefficient.
+
+#### Calculating the rank
 
 The Spearman's rank correlation coefficient is obtained by calculating the rank of every value, and then by using these values to calculate the Pearson correlation coefficient.
 
-There are several methods to calculate the rank of a list of values. The simplest method is to sort the values in ascending or descending order and to assign the values numbers from 1 until n, the amount of values. However if a value appears more than once, all these duplicates are assigned the rank of the first duplicate, while the numbering keeps going up silently So when a new unique value is encountered, the numbering jumps.
+There are several methods to calculate the rank of a list of values. The simplest method is to sort the values in ascending or descending order and to assign the values numbers from 1 until n, the amount of values. However if a value appears more than once, all these duplicates are assigned the rank of the first duplicate, while the numbering keeps going up silently, so when a new unique value is encountered, the numbering jumps.
 
 | Value        | Rank        |
 | -------------| ----------- |
@@ -254,15 +260,29 @@ Alternatively the duplicates can be assigned the average of their lowest and hig
 
 The values 4 would have received rank 3, 4 and 5. The average of 3 and 5 is 4, so all values receive rank 4.
 
-Now that we can calculate the rank of a list of values, using
+#### Calculating the correlation coefficient
+
+Now that we can calculate the rank of each element in a list of values, we can calculate the Spearman's rank correlation coefficient as follows
 
 $$
 \frac{cov(x',y')}{std(x')std(y')}
 $$
 
-Where $$x'$$ is the list of values obtained by replacing each value in $$x$$ by its rank.
+Where $$x'$$ and $$y'$$ are the list of values obtained by replacing each value in $$x$$ and $$y'$$ by its rank.
 
-## Significance of the correlation coefficient
+#### Significance of the correlation coefficient
+
+Just having the coefficient isn't enough to make a conclusion. We need to know how significant the result is, which depends on how much samples we have, we need to calculate the probability. To do this, we first calculate the tscore as
+
+$$t=\frac{r*\sqrt{n-2}}{\sqrt{1-r^2}}$$
+
+Then we can calculate the probability using TDIST(t, n-2, 2) in Excel or pt(-abs(x), n-2) * 2 in R.
+
+### Cramer's V
+
+### Theil's U or the Uncertainty Coefficient.
+
+### Correlation Ratio
 
 ## Deriving the regression formulas
 
