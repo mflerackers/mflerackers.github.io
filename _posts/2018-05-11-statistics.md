@@ -272,13 +272,71 @@ Where $$x'$$ and $$y'$$ are the list of values obtained by replacing each value 
 
 #### Significance of the correlation coefficient
 
-Just having the coefficient isn't enough to make a conclusion. We need to know how significant the result is, which depends on how much samples we have, we need to calculate the probability. To do this, we first calculate the tscore as
+Just having the coefficient isn't enough to make a conclusion. To know how significant the result is, which depends on how much samples we have, we need to calculate the probability. To do this, we first calculate the tscore as
 
 $$t=\frac{r*\sqrt{n-2}}{\sqrt{1-r^2}}$$
 
 Then we can calculate the probability using TDIST(t, n-2, 2) in Excel or pt(-abs(x), n-2) * 2 in R.
 
 ### Cramer's V
+
+This method can be used when both our data series are using categories rather than numbers.
+
+To calculate Cramer's V, we first calculate the frequency of each pair. If series x has categories from 1 to k, and series y has categories from 1 to r, then $$n_{ij}$$ holds the count of all data pairs where x is i and y is j. $$n_i$$ is the amount of data pairs where x is i, and $$n_j$$ is the amount of data pairs where y is j. $$n$$ itself is the amount of samples.
+
+Then we calculate $$\chi^{2}$$ or Chi squared from these frequencies
+
+$$\chi^2=\sum_{i,j}{\frac{(n_{ij}-\frac{n_{i}n_{j}}{n})^2}{\frac{n_{i}n_{j}}{n}}}$$
+
+And we can calculate V from $$\chi^{2}$$ as follows
+
+$$V=\sqrt{\frac{\chi^2/n}{\min(k-1,r-1)}}$$
+
+Where 0 means that the parameters are independent, and 1 that the parameters are dependent. So the value of V tells us how much the two parameters are related.
+
+What exactly are we calculating though, let's take a step back, and use an example. Let's say we have a lot of records with people's gender and hair color. We can create a table listing the frequency of each combination
+
+|              | Black | Brown | Red | Blond |
+| ------------ | ----- | ----- |---- |------ |
+| Male         | 56    | 143   | 34  | 46    |
+| Female       | 52    | 143   | 37  | 81    |
+
+So 56 of the people in our set have black hair and are male.
+
+Our table now contains the $$n_{ij}$$ values, from which we can calculate $$n{i}, n{j} and n
+
+|              | Black | Brown | Red | Blond | Sum |
+| ------------ | ----- | ----- |---- |------ | --- |
+| Male         | 56    | 143   | 34  | 46    | 279 |
+| Female       | 52    | 143   | 37  | 81    | 313 |
+| Sum          | 108   | 286   | 71  | 127   | 592 |
+
+Now we create a table which contains $$\frac{n_{i}n_{j}}{n}$$ for each i and j
+
+|              | Black       | Brown       | Red         | Blond       |
+| ------------ | ----------- | ----------- |------------ |------------ |
+| Male         | 50.89864865 | 134.7871622 | 33.46114865 | 59.85304054 |
+| Female       | 57.10135135 | 151.2128378 | 37.53885135 | 67.14695946 |
+
+This table contains what we call expected values. It is the table you would get if the parameters gender and hair color were completely unrelated. For example males with black hair. we know there are 108 people with black hair, and 279 people of 592 are male. This means that in a perfect case of unrelated parameters 108*279/592 or 50.89864865 would be males with black hair.
+
+If we replace $$\frac{n_{i}n_{j}}{n}$$ with $$E_{ij}$$ or the expected value at ij, we can rewrite the formula for $$\chi^2$$ as
+
+$$\chi^2=\sum_{i,j}{\frac{(n_{ij}-E_{ij})^2}{E_{ij}}}$$
+
+So we are looking at the scaled squared distance between the observed and expected values, and summing these scaled distances.
+
+So the $$\chi^2$$ value tells us how much the two sample distributions are apart.
+
+This is actually what CHITEST(observed, expected) does in Excel. It calculates $$\chi^2$$ like we did and calculates the degrees of freedom df
+
+$$df=max(1, r-1)*max(1, c-1)$$
+
+Then it calculates the probability. We can do this using CHIDIST($$\chi^2$$, df) in Excel or pchisq($$\chi^2$$, df, lower.tail=FALSE) in R.
+
+If the probability is beneath a threshold, 0.05 for example, it means that the samples are not from the same population, so our observed values are not from a population where the categories are unrelated, thus there is a relation between the two parameters.
+
+Cramer’s V however, gives an easier to interpret value between 0 and 1, without the need to choose a threshold.
 
 ### Theil's U or the Uncertainty Coefficient.
 
