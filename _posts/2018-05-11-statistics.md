@@ -4,6 +4,7 @@ title:  "Introduction to statistics"
 date:   2018-05-11 22:03:01 +0900
 categories: math
 excerpt: "A short introduction to statistical entities and how to use them. From mean to principal component analysis."
+toc: true
 ---
 
 ## Our data set
@@ -446,6 +447,17 @@ In our case H(X,Y) is 0.003527040169, which again points to a very weak correlat
 
 ### Correlation Ratio
 
+When we have one qualitative parameter and one quantitative parameter, we can use the correlation ratio to look for correlation.
+
+We start by sorting all the quantitative values into buckets, one for each possible value of the qualitative parameter. So if our qualitative parameter is gender, and our quantitative parameter is the salary, we make two lists, one for each gender, with all the salaries for that particular gender.
+
+Then we calculate the average for each list, which is the average salary by gender, $$\overline{y_i}$$. We also calculate the average of all salaries, $$\overline{y}$$.
+
+Now we can calculate the correlation ratio as
+
+$$\frac{\sum_i{n_i(\overline{y_i}-\overline{y})^2}}{\sum_i{(y-\overline{y})^2}}$$
+
+We can see that the numerator gives us the deviation of each bucket’s average to the total average, scaled by the amount of elements in the bucket. While the denominator gives us the deviation of all values to the total average. What does this mean? If one or more buckets have a disproportionate amount of larger numbers, the average of those buckets will be greater, and thus the deviation to the total average will be greater. This happens when there is a correlation, as in the case of a correlation, the bucket a value is in will influence its magnitude.
 
 
 ## Deriving the regression formulas
